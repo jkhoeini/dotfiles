@@ -11,7 +11,8 @@ ohmyzsh/ohmyzsh path:plugins/swiftpm
 ohmyzsh/ohmyzsh path:plugins/history-substring-search
 
 # ohmyzsh/ohmyzsh path:plugins/httpie
-lincheney/fzf-tab-completion path:/zsh/fzf-zsh-completion.sh
+# lincheney/fzf-tab-completion path:/zsh/fzf-zsh-completion.sh
+Aloxaf/fzf-tab
 # ohmyzsh/ohmyzsh path:plugins/osx
 
 ohmyzsh/ohmyzsh path:plugins/per-directory-history
@@ -20,6 +21,8 @@ ohmyzsh/ohmyzsh path:plugins/vi-mode
 zsh-users/zsh-autosuggestions
 zsh-users/zsh-completions
 zsh-users/zsh-syntax-highlighting
+
+nix-community/nix-zsh-completions
 
 # romkatv/powerlevel10k
 # fast prompt:
