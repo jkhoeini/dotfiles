@@ -104,78 +104,29 @@ end
 # function formulaName(str) { return str.trim().replaceAll(/;+/g, ';').replace(/;? ?([^ ]+).*/, "$1").replace(/^(.+\/)?([^/]+)$/, "$2") }
 # console.log(str.split('\n').toSorted((a, b) => formulaName(a) < formulaName(b) ? -1 : 1).join('\n'))
 formula_list = <<HEREDOC.gsub(/;.*$/, '').split("\n").map(&:strip).reject(&:empty?)
-  ;; adns
   nikitabobko/tap/aerospace ; window manager
-  ;alacritty ; terminal emulator
   antidote ; ZSH plugin manager.
-  ;antigen ; ZSH plugin management. outdated. use antidote instead
-  ;; aom
   arc ; nice browser
-  ;; asciinema
-  ;asdf ; tools version management
-  ;; assimp
-  borkdude/brew/babashka ; clojure cli scripting
-  bash
-  bat ; better cat alternative
   bazelisk ; nice cli for bazel build system
-  ;; bdw-gc
-  ;; berkeley-db
-  ;; bison
-  ;; black
-  blurred ; dim background apps windows
-  ;; boost
-  bottom ; better top util
-  ;; brotli
   ;browserosaurus ; select which browser
-  oven-sh/bun/bun ; node.js alternative
   ;; burklee
   ;; bzip2
   ;; c-ares
-  ;; ca-certificates
   chatgpt
   ;chromium
   ;; cjson
-  cloc ; count lines of code
-  clojure
-  clojure-lsp
-  clojurescript
-  ;; cmake
   ;; cmocka
-  coconutbattery ; battery info util
   ;; concurrencykit
   coreutils
-  ;; corretto
-  ;; corretto8
-  cowsay ; terminal eye candy
-  ;; ctags
-  curlie ; better curl alternative
   ;; dav1d
-  ;; dbus
-  ;; deno
   ;; desktop-file-utils
-  diffusionbee ; Stable Diffusion mac image tool
-  direnv
-  ;; docbook
-  ;; docbook-xsl
+  ;diffusionbee ; Stable Diffusion mac image tool
   docker ; docker desktop. Uses correct arch
   ;; double-conversion
-  ;; doxygen
-  dust ; better du alternative for measuring dir size
-  ;; ebook-tools
-  ;; edencommon
   ;; edex-ui
-  ;; entr
-  ;; exiv2
-  ;; extra-cmake-modules
-  eza ; better ls alternative
-  ;; fasd
   ;; fb303
-  ;; fbthrift
-  fd ; better find util
-  ;; ffmpeg
   firefox
   ;; fizz
-  ;; flac
   ;; flex
   flux ; set color temp at evening
   ;; flyway
@@ -197,15 +148,11 @@ formula_list = <<HEREDOC.gsub(/;.*$/, '').split("\n").map(&:strip).reject(&:empt
   ;; font-noto-nerd-font
   font-roboto-mono-nerd-font ; used for alacritty
   ;; font-victor-mono-nerd-font
-  ;; fontconfig
   mkhoeini/tap/fortune-mod ; beautiful quotes in the terminal. TODO include more quotes
-  ;; freetype
   ;; frei0r
   ;; fribidi
   ;; fx
-  fzf ; fuzzy search util
   ;; fzy
-  ;; gcc
   ;; gd
   ;; gdbm
   ;; gdk-pixbuf
@@ -216,16 +163,9 @@ formula_list = <<HEREDOC.gsub(/;.*$/, '').split("\n").map(&:strip).reject(&:empt
   ;; ghostscript
   ghostty
   ;; giflib
-  git ; version control system
   git-delta ; show beautiful git diffs in terminal
   git-gui ; gitx and git gui commands
-  git-lfs
-  ;; github-beta
-  ;; glib
   ;; glog
-  glow ; Beautiful Terminal Markdown Renderer
-  ;; gmp
-  ;; gnu-getopt
   gnu-sed ; standard sed util implementation
   ;; gnu-tar
   ;; gnupg
@@ -510,7 +450,7 @@ formula_list = <<HEREDOC.gsub(/;.*$/, '').split("\n").map(&:strip).reject(&:empt
   ;; zeromq
   ;; zimg
   ;; zlib
-  zoxide ; better cd alternative. z command
+  ;zoxide ; better cd alternative. z command
   zsh
   ;; zstd
 HEREDOC

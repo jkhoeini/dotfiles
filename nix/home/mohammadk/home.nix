@@ -4,8 +4,11 @@
 }:
 let
   homeDir = "/Users/${username}";
-  files = import ./files/default.nix {};
 in {
+  imports = [
+    ../../modules/files
+  ];
+
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
   home.username = username;
@@ -28,8 +31,6 @@ in {
   # programs.zsh.enable = true;
 
   home.preferXdgDirectories = true;
-
-  home.file = files;
 
   manual.html.enable = true;
 }

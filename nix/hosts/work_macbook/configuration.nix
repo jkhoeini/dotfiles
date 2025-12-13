@@ -1,45 +1,53 @@
-input@{
-  pkgs,
-  inputs,
-  system,
-  username,
-  kanata,
-  ...
+{ pkgs
+, inputs
+, system
+, username
+, ...
 }:
 
-let
-  programs = import ./programs input;
-in
 {
-  imports = [ ./services ];
-
   users.users.${username} = {
     name = username;
     home = "/Users/${username}";
   };
 
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
+  system.primaryUser = username;
+
   environment.systemPackages = with pkgs; [
+    babashka
+    bash
+    bat
+    # blurred ; dim background apps windows
+    bottom
+    cloc
+    coconutbattery
+    cowsay
+    curlie
+    direnv
+    dust
+    eza
+    fd
+    fzf
+    git
+    git-fame
+    git-hub
+    git-lfs
     google-cloud-sql-proxy
-    kanata.packages.${system}.kanata
+    grpcurl
+    jj-fzf
+    kanata
+    lazygit
     nil
     nixd
     nixfmt-rfc-style
     typst
-    typst-lsp
     vim
   ];
 
-  # nix.package = pkgs.nix;
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # Necessary for using flakes on this system.
-  nix.settings.experimental-features = "nix-command flakes";
-
-  inherit programs;
-
-  security.pam.enableSudoTouchIdAuth = true;
-  system.defaults.NSGlobalDomain._HIHideMenuBar = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
+  system.defaults.NSGlobalDomain._HIHideMenuBar = false; # don't autohide menu bar
   system.defaults.dock.autohide = true;
   system.defaults.dock.expose-animation-duration = 1.0e-3;
   system.defaults.dock.launchanim = false;
@@ -59,8 +67,5 @@ in
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = system;
 
-  nixpkgs.config = {
-    allowUnfree = true;
-  };
-
+  nixpkgs.config.allowUnfree = true;
 }
