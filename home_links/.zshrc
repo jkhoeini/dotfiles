@@ -136,8 +136,6 @@ export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 
-eval "$(zoxide init zsh)"
-
 export PATH=$HOME/dotemacs/doom/bin:$PATH
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -176,6 +174,20 @@ export PATH="$PATH:/Users/mohammadk/Library/Application Support/Coursier/bin"
 
 # Added by Antigravity
 export PATH="/Users/mohammadk/.antigravity/antigravity/bin:$PATH"
+
+nixhome () {
+    nix eval "nixpkgs#legacyPackages.aarch64-darwin.${1:?usage: nixhome <package>}.meta.homepage";
+}
+_nixhome_complete() {
+  local -a pkgs
+  pkgs=(${(f)"$(
+    nix eval --raw 'nixpkgs#legacyPackages.aarch64-darwin' \
+      --apply 'pkgs: builtins.concatStringsSep "\n" (builtins.attrNames pkgs)' \
+      2>/dev/null
+  )"})
+  compadd -Q -- $pkgs
+}
+compdef _nixhome_complete nixhome
 
 # This should remain as the last command in file to properly profile everything
 if $RUN_ZPROF; then

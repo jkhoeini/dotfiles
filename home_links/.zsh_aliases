@@ -16,7 +16,6 @@ alias ll="eza -lah --icons --group-directories-first --git"
 
 alias ps='procs --tree'
 alias top='btm'
-alias cd='echo "Use \`z\` instead"; z'
 
 alias sp="emacs --init-directory $HOME/dotemacs/spacemacs"
 alias de="emacs --init-directory $HOME/dotemacs/doom"
@@ -24,8 +23,4 @@ alias em-reset="brew services restart d12frosted/emacs-plus/emacs-plus@30"
 
 alias w='type -a'
 
-alias pn=pnpm
-
-alias nre="darwin-rebuild switch --flake ~/Dev/dotfiles/nix\#default"
-
-alias lg=lazygit
+alias nre="sudo darwin-rebuild switch --flake ~/Dev/dotfiles/nix\#default"
