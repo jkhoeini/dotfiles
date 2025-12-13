@@ -1,19 +1,4 @@
-{
-  username,
-  ...
-}:
-let
-  homeDir = "/Users/${username}";
-in {
-  imports = [
-    ../../modules/files
-  ];
-
-  # Home Manager needs a bit of information about you and the
-  # paths it should manage.
-  home.username = username;
-  home.homeDirectory = homeDir;
-
+{ ... } : {
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
   # when a new Home Manager release introduces backwards
@@ -26,9 +11,6 @@ in {
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-
-  # needs migrating zshrc
-  # programs.zsh.enable = true;
 
   home.preferXdgDirectories = true;
 

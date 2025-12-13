@@ -8,7 +8,7 @@
 {
   users.users.${username} = {
     name = username;
-    home = "/Users/${username}";
+    home = /Users/${username};
   };
 
   system.primaryUser = username;

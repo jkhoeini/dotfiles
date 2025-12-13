@@ -23,9 +23,6 @@
       username = "mohammadk";
       host = "work_macbook";
 
-      configuration = ./hosts/${host}/configuration.nix;
-      homeConfig = ./home/${username}/home.nix;
-
       overlay = final: prev: {
         jj-fzf = final.callPackage ./pkgs/jj-fzf { };
         kanata = final.callPackage ./pkgs/kanata { };
@@ -36,7 +33,7 @@
         useUserPackages = true;
 
         # user specific config
-        users.${username} = import homeConfig;
+        users.${username} = import ./home/${username}.nix;
 
         extraSpecialArgs = {
           inherit username inputs;
@@ -47,11 +44,17 @@
         inherit system;
 
         modules = [
+          # nix-darwin modules
           ./modules/programs
           ./modules/services
-          configuration
+          ./hosts/${host}/configuration.nix
+
+          # home-manager modules
           home-manager.darwinModules.home-manager
           home-manager-configs
+          ./modules/files
+
+          # overlays
           ({ ... }: { nixpkgs.overlays = [ overlay ]; })
         ];
 
