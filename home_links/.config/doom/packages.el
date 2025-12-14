@@ -56,10 +56,10 @@
 (package! typst-ts-mode
   :recipe (:type git :host codeberg :repo "meow_king/typst-ts-mode"))
 (package! paren-face)
-(package! gptel :recipe (:nonrecursive t))
-(package! mcp)
-(package! magit-gptcommit)
-(package! aidermacs)
-(package! ob-aider
-  :recipe (:host github :repo "localredhead/ob-aider.el"))
+;; (package! gptel :recipe (:nonrecursive t))
+;; (package! mcp)
+;; (package! magit-gptcommit)
+;; (package! aidermacs)
+;; (package! ob-aider
+;;   :recipe (:host github :repo "localredhead/ob-aider.el"))
 (package! eat :recipe (:host codeberg :repo "akib/emacs-eat"))

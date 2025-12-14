@@ -202,12 +202,12 @@ current buffer's, reload dir-locals."
                    :stream t
                    :models '(devstral:latest magistral:latest))))
 
-(use-package! magit-gptcommit
-  :config
-  (require 'llm-ollama)
-  (setq magit-gptcommit-llm-provider (make-llm-ollama :chat-model "devstral:latest"))
-  (magit-gptcommit-mode 1)
-  (magit-gptcommit-status-buffer-setup))
+;; (use-package! magit-gptcommit
+;;   :config
+;;   (require 'llm-ollama)
+;;   (setq magit-gptcommit-llm-provider (make-llm-ollama :chat-model "devstral-small-2:latest"))
+;;   (magit-gptcommit-mode 1)
+;;   (magit-gptcommit-status-buffer-setup))
 
 (after! aidermacs
   (setq aidermacs-default-model "ollama_chat/devstral"
