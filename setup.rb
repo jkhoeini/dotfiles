@@ -106,16 +106,10 @@ end
 formula_list = <<HEREDOC.gsub(/;.*$/, '').split("\n").map(&:strip).reject(&:empty?)
   nikitabobko/tap/aerospace ; window manager
   antidote ; ZSH plugin manager.
-  arc ; nice browser
   bazelisk ; nice cli for bazel build system
-  ;browserosaurus ; select which browser
+  browserosaurus ; select which browser
   ;; burklee
-  ;; bzip2
   ;; c-ares
-  chatgpt
-  ;chromium
-  ;; cjson
-  ;; cmocka
   ;; concurrencykit
   coreutils
   ;; dav1d
@@ -127,9 +121,7 @@ formula_list = <<HEREDOC.gsub(/;.*$/, '').split("\n").map(&:strip).reject(&:empt
   ;; fb303
   firefox
   ;; fizz
-  ;; flex
   flux ; set color temp at evening
-  ;; flyway
   ;; fmt
   ;; folly
   ;; font-code-new-roman-nerd-font
@@ -150,241 +142,62 @@ formula_list = <<HEREDOC.gsub(/;.*$/, '').split("\n").map(&:strip).reject(&:empt
   ;; font-victor-mono-nerd-font
   mkhoeini/tap/fortune-mod ; beautiful quotes in the terminal. TODO include more quotes
   ;; frei0r
-  ;; fribidi
   ;; fx
   ;; fzy
   ;; gd
-  ;; gdbm
-  ;; gdk-pixbuf
-  ;; gettext
-  ;; gflags
-  ;; gh
-  ;; ghc
-  ;; ghostscript
   ghostty
-  ;; giflib
   git-delta ; show beautiful git diffs in terminal
-  git-gui ; gitx and git gui commands
   ;; glog
   gnu-sed ; standard sed util implementation
-  ;; gnu-tar
-  ;; gnupg
-  ;; gnutls
-  ;; go
-  ;; gobject-introspection
-  ;; google-chrome
   google-cloud-sdk ; cli for google cloud
-  ;; gperf
-  ;; gpgme
   ;; graphite2
-  ;; graphviz
-  grpcurl
-  ;; gts
   ;; guile
   ;; hades-cli
   hammerspoon ; desktop automation tool
-  ;; harfbuzz
-  helix
   hiddenbar ; make taskbar icons hidden
   ;; highway
-  ;; hmtools
-  ;hub ; convenient github cli
-  ;; hunspell
   hyperfine ; terminal benchmark util
-  ;; icu4c
-  iina ; greate video player
-  ijq ; interactive jq for json manipulation
-  ;; ilmbase
-  ;; imagemagick
-  ;; imath
+  ;iina ; greate video player
+  ;ijq ; interactive jq for json manipulation
   intellij-idea-ce
-  ;; ipython
-  ;; isl
   ispell ; emacs uses this for spell checking
   itsycal ; calendar menubar
-  ;; jansson
-  ;; jasper
-  ;; jbig2dec
-  ;; jemalloc
-  ;; jet
-  ;; jlog
-  ;; jpeg
-  ;; jpeg-turbo
-  ;; jpeg-xl
   jq ; commandline json util
   jupyterlab
   just ; better make alternative
-  ;; k6
-  ;; kde-extra-cmake-modules
-  ;; kf5-kdoctools
-  ;; kitty
-  ;; krb5
   krita
-  ;; kubectl-site
-  ;; kubectx
-  ;; kubernetes-cli
-  ;; lame
   ;; lapce ; Rust based GUI editor
   lazygit ; git TUI
-  ;tnk-studio/tools/lazykube ; kubernetes cli
-  ;; leiningen
   ;; leptonica
-  ;; libarchive
-  ;; libass
-  ;; libassuan
-  ;; libavif
-  ;; libb2
-  ;; libbluray
-  ;; libcanberra
-  ;; libcbor
-  ;; libcroco
-  ;; libde265
-  ;; libepoxy
-  ;; libev
-  ;; libevent
-  ;; libffi
-  ;; libfido2
-  ;; libgccjit
-  ;; libgcrypt
-  ;; libgpg-error
-  ;; libheif
-  ;; libidn
-  ;; libidn2
-  ;; libksba
-  ;; liblinear
-  ;; liblqr
-  ;; libmng
-  ;; libmpc
-  ;; libmtp
-  ;; libnghttp2
-  ;; libogg
-  ;; libomp
-  ;; libpng
-  ;; libproxy
-  ;; libpthread-stubs
-  ;; libraw
-  ;; librist
-  ;; librsvg
-  ;; libsamplerate
-  ;; libsndfile
-  ;; libsodium
-  ;; libsoxr
-  ;; libssh
-  ;; libssh2
-  ;; libtasn1
-  ;; libtermkey
-  ;; libtiff
-  ;; libtool
-  ;; libunistring
-  ;; libusb
-  ;; libusb-compat
-  ;; libuv
-  ;; libvidstab
-  ;; libvmaf
-  ;; libvorbis
-  ;; libvpx
-  ;; libvterm
-  ;; libx11
-  ;; libxau
-  ;; libxcb
-  ;; libxdmcp
-  ;; libxext
-  ;; libxml2
-  ;; libxrender
-  ;; libxslt
-  ;; libyaml
-  ;; libzip
-  ;; little-cms2
-  ;; llvm
   logseq ; personal knowledge management
   lolcat ; make terminal quotes colorful
-  ;; lua
-  ;; lua@5.3
-  ;; luajit
-  ;; luajit-openresty
   luarocks ; package management for lua
-  ;; luv
-  ;; lz4
-  ;; lzo
-  ;; m4
-  ;; make
   maven ; java package manager
-  ;; mbedtls
-  ;; md4c
-  ;; meetingbar
   mise
   ;; mitmproxy
   remotemobprogramming/brew/mob ; mob cli for mobbing
-  ;; mosh
-  ;; mpdecimal
-  ;; mpfr
-  ;; msgpack
-  ;; mysql
-  ;; ncurses
-  neovide ; GUI for neovim
+  ;neovide ; GUI for neovim
   neovim ; better vim alternative
-  ;; netpbm
-  ;; nettle
-  ;; nghttp2
-  ;; ninja
-  ;; nmap
-  ;; noisebuddy
-  ;; noisy
-  ;; npth
-  ;; nspr
-  ;; nss
-  ;; oha
   ollama
   ;; onefetch
   ;onething ; TODO doesn't exist - focus on one thing at a time
   ;; oniguruma
-  ;; opencore-amr
-  ;; openexr
-  ;; openjpeg
-  ;; openslp
-  ;; openssl@1.1
   ;; opus
-  ;; p11-kit
   p7zip ; 7zip compression with new extentions
   pandoc
-  ;; pango
-  ;; parallel
-  ;; pcre
-  ;; pcre2
-  ;; perl
-  ;; pgweb
-  ;; pinentry
   ;; pixman
-  ;; pkg-config
   ponysay ; cowsay alternative
-  ;; poppler
-  ;; postgresql
-  ;; postgresql@13
-  ;; postgresql@14
   ;; prettyping
   procs ; better ps alternative
-  ;; protobuf
-  ;; pygments
   ;; qutebrowser
   ;rancher ; Docker Desktop replacement
   ;ranger ; terminal file manager
   ;; rav1e
   raycast ; App Launcher
-  ;; readline
-  ;; recode
   ;rectangle ; Window management with keyboard
   ;; retinizer
   ripgrep ; cli search util
   rlwrap ; readline cli util
-  ;; rtmpdump
-  ;; rubberband
-  ;; rust
-  ;; sbt
-  ;; scala
-  ;; scc
-  ;; scio
-  ;; sdl2
-  ;; shared-mime-info
   ;; shellcheck
   ;; showkey
   ;; six
@@ -395,19 +208,13 @@ formula_list = <<HEREDOC.gsub(/;.*$/, '').split("\n").map(&:strip).reject(&:empt
   ;; spotify
   ;; spotify-disco
   ;; spotify-nameless-cli
-  ;; sqlite
-  ;; srt
   ;starship ; zsh prompt. instead use powerlevel10k
   stow ; symlink management
   ;; styx-cli
   ;; swiftdefaultappsprefpane
-  ;; taglib
   ;; tcl-tk
   telegram
   ;; telegram-desktop ; electron based
-  ;; tesseract
-  ;; texinfo
-  ;; theora
   tinymist
   ;; todoist
   tomatobar ; pomodoro menubar
@@ -416,40 +223,20 @@ formula_list = <<HEREDOC.gsub(/;.*$/, '').split("\n").map(&:strip).reject(&:empt
   tribler ; torrent download client
   ;; ttyplot
   ;; unbound
-  ;; unibilium
-  ;; unixodbc
-  ;; utf8proc
   utm@beta
   uv
   ;; v2ray
   ;vimac ; TODO doesn't exist - mac vim mode hints overlay
-  vimr ; another vim GUI
+  ;vimr ; another vim GUI
   visual-studio-code
-  ;; wakatime-cli
   ;; wangle
   watchexec ; run commands on file change
-  ;; watchman
-  ;; webp
   ;; websocat
   wezterm
-  ;; wget
-  ;; x264
-  ;; x265
   ;; xbar ; menubar super app
   xdg-ninja ; Config dotfiles to be in XDG folders - TODO apply suggestions
-  ;; xmlto
-  ;; xorgproto
-  ;; xvid
-  ;; xz
-  koekeishiya/formulae/yabai
-  yt-dlp
-  ;; z
-  ;; z3
   zed
   ;zellij ; better tmux alternative
-  ;; zeromq
-  ;; zimg
-  ;; zlib
   ;zoxide ; better cd alternative. z command
   zsh
   ;; zstd

@@ -34,6 +34,7 @@
     git-lfs
     google-cloud-sql-proxy
     grpcurl
+    helix
     jj-fzf
     kanata
     lazygit
@@ -42,6 +43,8 @@
     nixfmt-rfc-style
     typst
     vim
+    yabai
+    yt-dlp
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
