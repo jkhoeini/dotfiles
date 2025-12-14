@@ -186,21 +186,17 @@ current buffer's, reload dir-locals."
    :run "swift run"
    :test "swift test"))
 
-(map! "C-M-s-f"
-      (cmd!  ; doom macro: wraps a lambda (interactive)
-       (start-process "fill-screen" nil "osascript"
-                      "-e" "tell application \"System Events\" to key down 63"                       ; Fn down
-                      "-e" "tell application \"System Events\" to key code 3 using {control down}"   ; Ctrl-F
-                      "-e" "tell application \"System Events\" to key up 63")))                     ; Fn up
+
+;; ==== AI Stuff ====================
 
 (after! gptel
   (require 'gptel-integrations)
   (setq
-   gptel-model 'magistral:latest
+   gptel-model 'devstral-small-2:latest
    gptel-backend (gptel-make-ollama "Ollama"
                    :host "localhost:11434"
                    :stream t
-                   :models '(devstral:latest magistral:latest))))
+                   :models '(devstral-small-2:latest magistral:latest))))
 
 ;; (use-package! magit-gptcommit
 ;;   :config
