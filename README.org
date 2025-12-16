@@ -18,7 +18,7 @@ Run this in the terminal. It will setup homebrew and emacs and install dependenc
 - [X] precompile fennel code in hammerspoon
 - [ ] implement git based plugin fetching in hammerspoon
 - [ ] create proper repl for hammerspoon-fennel
-- [ ] create a kanata flake and add its config and autostart on startup
+- [X] create a kanata flake and add its config and autostart on startup
 - [X] replace asdf with mise
 - [X] replace alacritty and zellij with wezterm
 
@@ -421,4 +421,58 @@ vscode "zainchen.json"
 vscode "zhuangtongfa.material-theme"
 vscode "ziglang.vscode-zig"
 vscode "ziyasal.vscode-open-in-github"
+#+end_quote
+
+** brew formulas
+#+begin_quote
+  ;; burklee
+  ;; concurrencykit
+  ;; dav1d
+  ;; desktop-file-utils
+  ;; double-conversion
+  ;; edex-ui
+  ;; fb303
+  ;; fizz
+  ;; fmt
+  ;; folly
+  ;; font-code-new-roman-nerd-font
+  ;; font-dejavu-sans-mono-nerd-font
+  ;; font-fira-code-nerd-font
+  ;; font-firacode-nerd-font
+  ;; font-hack-nerd-font
+  ;; font-hasklig
+  ;; font-hasklig-nerd-font
+  ;; font-lilex
+  ;; font-monoid-nerd-font
+  ;; font-noto-nerd-font
+  ;; font-victor-mono-nerd-font
+  ;; frei0r
+  ;; fx
+  ;; fzy
+  ;; gd
+  ;; glog
+  ;; graphite2
+  ;; highway
+  ;; lapce ; Rust based GUI editor
+  ;; leptonica
+  ;; onefetch
+  ;onething ; TODO doesn't exist - focus on one thing at a time
+  ;; oniguruma
+  ;; opus
+  ;; pixman
+  ;; prettyping
+  ;; rav1e
+  ;; retinizer
+  ;; shellcheck
+  ;; showkey
+  ;; six
+  ;; snappy
+  ;; speex
+  ;; swiftdefaultappsprefpane
+  ;; tcl-tk
+  ;; ttyplot
+  ;; wangle
+  ;; websocat
+  ;; xbar ; menubar super app
+  ;; zstd
 #+end_quote
