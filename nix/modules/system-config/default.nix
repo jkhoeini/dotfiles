@@ -19,12 +19,17 @@
 
   system.primaryUser = username;
 
+  networking.computerName = "${username}'s work macbook pro";
+  networking.hostName = "${username}-work-macbook-pro";
+  networking.dns = [ "127.0.0.1" ];
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
 
   security.pam.services.sudo_local.touchIdAuth = true;
+  security.pam.services.sudo_local.watchIdAuth = true;
   system.defaults.NSGlobalDomain._HIHideMenuBar = false; # don't autohide menu bar
   system.defaults.dock.autohide = true;
   system.defaults.dock.expose-animation-duration = 1.0e-3;
