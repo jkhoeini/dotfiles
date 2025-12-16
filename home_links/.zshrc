@@ -44,8 +44,6 @@ if [[ -s "$COMPDUMP" && ( ! -s "${COMPDUMP}.zwc" || "$COMPDUMP" -nt "${COMPDUMP}
 fi
 
 # Lines configured by zsh-newuser-install
-HISTFILE=~/.histfile
-HISTSIZE=10000
 SAVEHIST=10000
 setopt appendhistory autocd beep extendedglob
 bindkey -v
