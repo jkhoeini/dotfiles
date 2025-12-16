@@ -35,6 +35,8 @@
           ./modules/programs
           ./modules/services
           ./modules/system-config
+          ./modules/homebrew
+          ./work-stuff.nix
 
           # home-manager modules
           home-manager.darwinModules.home-manager
