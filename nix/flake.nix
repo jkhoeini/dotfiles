@@ -21,7 +21,6 @@
     let
       system = "aarch64-darwin";
       username = "mohammadk";
-      host = "work_macbook";
 
       overlay = final: prev: {
         jj-fzf = final.callPackage ./pkgs/jj-fzf { };
@@ -29,9 +28,6 @@
       };
 
       home-manager-configs.home-manager = {
-        useGlobalPkgs = true;
-        useUserPackages = true;
-
         # user specific config
         users.${username} = import ./home/${username}.nix;
 
@@ -47,7 +43,7 @@
           # nix-darwin modules
           ./modules/programs
           ./modules/services
-          ./hosts/${host}/configuration.nix
+          ./modules/system-config
 
           # home-manager modules
           home-manager.darwinModules.home-manager
@@ -55,7 +51,12 @@
           ./modules/files
 
           # overlays
-          ({ ... }: { nixpkgs.overlays = [ overlay ]; })
+          (
+            { ... }:
+            {
+              nixpkgs.overlays = [ overlay ];
+            }
+          )
         ];
 
         specialArgs = {
