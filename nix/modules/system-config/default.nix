@@ -9,6 +9,7 @@
     ./packages.nix
     ./aliases.nix
     ./path.nix
+    ./env.nix
   ];
 
   users.users.${username} = {

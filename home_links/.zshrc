@@ -13,27 +13,13 @@ export HOMEBREW_EVAL_ALL=1
 source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 
-export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-export PUPPETEER_EXECUTABLE_PATH=`which chromium`
-
-# NOTE disabled for performance
-# PONYSAY="$(shuf -n 1 -e ponysay ponythink) -f $(shuf -n 1 -e $(ponysay --all | grep -v 'ponies located in'))"
-# COWSAY="$(shuf -n 1 -e cowsay cowthink) -$(shuf -n 1 -e b d g p s t w y) -f $(shuf -n 1 -e $(cowsay -l | tail -n +2)) -n | lolcat"
-# fortune | eval $(shuf -n 1 -e "$PONYSAY" "$COWSAY" $(jot -b cat 20))
-
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-# NOTE disabled for performance
-# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-# fi
-
 # The following lines were added by compinstall
 
 zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate
 zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=** r:|=**' 'l:|=* r:|=*'
 zstyle :compinstall filename "$HOME/.zshrc"
+
+# End of lines added by compinstall
 
 fpath+=~/.zfunc
 
@@ -57,7 +43,6 @@ if [[ -s "$COMPDUMP" && ( ! -s "${COMPDUMP}.zwc" || "$COMPDUMP" -nt "${COMPDUMP}
   zcompile -R -- "${COMPDUMP}.zwc" "$COMPDUMP" 2>/dev/null
 fi
 
-# End of lines added by compinstall
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
 HISTSIZE=10000
@@ -85,17 +70,14 @@ zstyle ':completion:*:warnings' format "$fg[red]No matches for:$reset_color %d"
 zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
 zstyle ':completion:*' group-name ''
 
-
-export EDITOR='ec'
-
 source "$(brew --prefix)/share/antidote/antidote.zsh"
 antidote load ~/.config/antidote/plugins.txt
 
-
-source ~/.zsh_aliases
-
-
-# Configs
+alias -g ...='../..'
+alias -g ....='../../..'
+alias -g .....='../../../..'
+alias -g L='| less -R'
+alias -g G='| grep -i'
 
 autoload -U promptinit; promptinit
 prompt pure
@@ -106,11 +88,7 @@ fi
 
 bindkey '^T' fzf-file-widget
 bindkey '^R' fzf-history-widget
-# bindkey '^I' fzf-completion
 bindkey '^K' per-directory-history-toggle-history
-
-# bun completions
-[[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
 
 eval "$(mise activate zsh)"
 
@@ -118,17 +96,11 @@ eval "$(mise activate zsh)"
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 
-# NOTE disabled for performance
+# NOTE disabled for performance. Instead the envs are set in nix
 # eval $(luarocks path)
-# Replaced with these lines instead from the output of the above
-export LUA_PATH='/opt/homebrew/Cellar/luarocks/3.12.2/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?/init.lua;/opt/homebrew/lib/lua/5.4/?.lua;/opt/homebrew/lib/lua/5.4/?/init.lua;./?.lua;./?/init.lua;$HOME/.luarocks/share/lua/5.4/?.lua;$HOME/.luarocks/share/lua/5.4/?/init.lua'
-export LUA_CPATH='/opt/homebrew/lib/lua/5.4/?.so;/opt/homebrew/lib/lua/5.4/loadall.so;./?.so;$HOME/.luarocks/lib/lua/5.4/?.so'
 
 # help cursor-ide detect command is finished
-PROMPT_EOL_MARK=“”
 [[ -s "$HOME/.iterm2_shell_integration.zsh" ]] && source "$HOME/.iterm2_shell_integration.zsh"
-
-export GEMINI_API_KEY=$(security find-generic-password -a $USER -s GEMINI_API_KEY -w)
 
 [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
   source "$EAT_SHELL_INTEGRATION_DIR/zsh"

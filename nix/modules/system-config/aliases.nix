@@ -18,6 +18,6 @@
 
     w = "type -a";
 
-    nre = "sudo darwin-rebuild switch --flake ~/Dev/dotfiles/nix\#default";
+    nre = "sudo darwin-rebuild switch --flake ~/Dev/dotfiles/nix\\#default";
   };
 }
