@@ -4,8 +4,6 @@
   homebrew.global.brewfile = true;
   homebrew.onActivation.cleanup = "none"; # "none", "uninstall", "zap"
 
-  homebrew.taps = [ "nikitabobko/tap" ];
-
   homebrew.masApps = { };
   homebrew.whalebrews = [ ];
 
@@ -122,8 +120,6 @@
   ];
 
   homebrew.casks = [
-    # AeroSpace is an i3-like tiling window manager for macOS
-    "nikitabobko/tap/aerospace"
     # Android SDK component
     "android-platform-tools"
     # Tools for building Android applications

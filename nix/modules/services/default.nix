@@ -1,7 +1,9 @@
 { ... }:
-
 {
-  imports = [ ./sketchybar ];
+  imports = [
+    ./sketchybar
+    ./aerospace.nix
+  ];
 
   services.ipfs.enable = true;
   services.nextdns.enable = true;
