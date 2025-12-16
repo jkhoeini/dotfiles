@@ -27,15 +27,6 @@
         kanata = final.callPackage ./pkgs/kanata { };
       };
 
-      home-manager-configs.home-manager = {
-        # user specific config
-        users.${username} = import ./home/${username}.nix;
-
-        extraSpecialArgs = {
-          inherit username inputs;
-        };
-      };
-
       work-macbook-config = nix-darwin.lib.darwinSystem {
         inherit system;
 
@@ -47,7 +38,7 @@
 
           # home-manager modules
           home-manager.darwinModules.home-manager
-          home-manager-configs
+          ./modules/home
           ./modules/files
 
           # overlays
