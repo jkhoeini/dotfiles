@@ -7,6 +7,7 @@
 {
   imports = [
     ./packages.nix
+    ./aliases.nix
   ];
 
   users.users.${username} = {

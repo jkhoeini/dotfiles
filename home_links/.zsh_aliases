@@ -3,24 +3,3 @@ alias -g ....='../../..'
 alias -g .....='../../../..'
 alias -g L='| less -R'
 alias -g G='| grep -i'
-
-alias b='brew'
-alias bi='brew install'
-alias bs='brew search --desc'
-alias bd='brew desc'
-
-alias v='lvim-neovide'
-
-alias l="eza -aa"
-alias ll="eza -lah --icons --group-directories-first --git"
-
-alias ps='procs --tree'
-alias top='btm'
-
-alias sp="emacs --init-directory $HOME/dotemacs/spacemacs"
-alias de="emacs --init-directory $HOME/dotemacs/doom"
-alias em-reset="brew services restart d12frosted/emacs-plus/emacs-plus@30"
-
-alias w='type -a'
-
-alias nre="sudo darwin-rebuild switch --flake ~/Dev/dotfiles/nix\#default"
