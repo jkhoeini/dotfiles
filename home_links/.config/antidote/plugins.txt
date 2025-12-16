@@ -10,8 +10,6 @@ ohmyzsh/ohmyzsh path:plugins/gitfast
 ohmyzsh/ohmyzsh path:plugins/swiftpm
 ohmyzsh/ohmyzsh path:plugins/history-substring-search
 
-# ohmyzsh/ohmyzsh path:plugins/httpie
-# lincheney/fzf-tab-completion path:/zsh/fzf-zsh-completion.sh
 Aloxaf/fzf-tab
 # ohmyzsh/ohmyzsh path:plugins/osx
 
@@ -24,6 +22,4 @@ zsh-users/zsh-syntax-highlighting
 
 nix-community/nix-zsh-completions
 
-# romkatv/powerlevel10k
-# fast prompt:
 sindresorhus/pure

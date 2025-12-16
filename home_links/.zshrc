@@ -10,12 +10,6 @@ fi
 eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_EVAL_ALL=1
 
-export PATH="$HOME/.local/bin/:$HOME/.poetry/bin:$HOME/.cargo/bin:$HOME/.deno/bin:/usr/local/bin:$PATH"
-
-
-# Added by Toolbox App
-export PATH="$PATH:$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
-
 source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 
@@ -92,18 +86,11 @@ zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
 zstyle ':completion:*' group-name ''
 
 
-# ENV Configs
-
-export EDITOR='nvim'
-
-
-# Antidote
+export EDITOR='ec'
 
 source "$(brew --prefix)/share/antidote/antidote.zsh"
 antidote load ~/.config/antidote/plugins.txt
 
-
-# Aliases
 
 source ~/.zsh_aliases
 
@@ -125,37 +112,17 @@ bindkey '^K' per-directory-history-toggle-history
 # bun completions
 [[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
 
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
 eval "$(mise activate zsh)"
-
-# pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-# pnpm end
-
-export PATH=$HOME/dotemacs/doom/bin:$PATH
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-# NOTE disabled for performance
-# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
-
-# Mojo setup
-export MODULAR_HOME="$HOME/.modular"
-export PATH="$HOME/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
 
 # NOTE disabled for performance
 # eval $(luarocks path)
 # Replaced with these lines instead from the output of the above
 export LUA_PATH='/opt/homebrew/Cellar/luarocks/3.12.2/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?/init.lua;/opt/homebrew/lib/lua/5.4/?.lua;/opt/homebrew/lib/lua/5.4/?/init.lua;./?.lua;./?/init.lua;$HOME/.luarocks/share/lua/5.4/?.lua;$HOME/.luarocks/share/lua/5.4/?/init.lua'
 export LUA_CPATH='/opt/homebrew/lib/lua/5.4/?.so;/opt/homebrew/lib/lua/5.4/loadall.so;./?.so;$HOME/.luarocks/lib/lua/5.4/?.so'
-export PATH="$HOME/.luarocks/bin:$PATH"
 
 # help cursor-ide detect command is finished
 PROMPT_EOL_MARK=“”
@@ -169,11 +136,6 @@ export GEMINI_API_KEY=$(security find-generic-password -a $USER -s GEMINI_API_KE
 [[ -s "$HOME/spotify.zsh" ]] && source "$HOME/spotify.zsh"
 
 source <(jj util completion zsh)
-
-export PATH="$PATH:/Users/mohammadk/Library/Application Support/Coursier/bin"
-
-# Added by Antigravity
-export PATH="/Users/mohammadk/.antigravity/antigravity/bin:$PATH"
 
 nixhome () {
     nix eval "nixpkgs#legacyPackages.aarch64-darwin.${1:?usage: nixhome <package>}.meta.homepage";
