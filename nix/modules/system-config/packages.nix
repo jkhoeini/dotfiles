@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
+    anki
     babashka
     bash
     bat
@@ -8,9 +9,13 @@
     bottom
     cloc
     coconutbattery
+    coreutils-full
     cowsay
     curlie
+    delta
     direnv
+    docker-compose
+    duckdb
     dust
     eza
     fd
@@ -22,15 +27,33 @@
     google-cloud-sql-proxy
     grpcurl
     helix
+    hyperfine
+    imagemagick
+    ispell
+    itsycal
     jj-fzf
+    jq
+    jujutsu
     kanata
     lazygit
+    logseq
+    luarocks
+    mise
+    neovim
     nil
     nixd
     nixfmt-rfc-style
+    obsidian
+    procs
+    qmk
+    raycast
+    ripgrep
+    rlwrap
+    tinymist
     typst
     vim
     yabai
     yt-dlp
+    zed-editor
   ];
 }

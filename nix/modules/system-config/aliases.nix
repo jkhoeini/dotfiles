@@ -3,7 +3,7 @@
   environment.shellAliases = {
     b = "brew";
     bi = "brew install";
-    bs = "brew search --desc";
+    bs = "brew search";
     bd = "brew desc";
 
     l = "eza -aa";
@@ -18,6 +18,8 @@
 
     w = "type -a";
 
+    n = "nix";
+    ns = "nix search nixpkgs";
     nre = "sudo darwin-rebuild switch --flake ~/Dev/dotfiles/nix\\#default";
   };
 }

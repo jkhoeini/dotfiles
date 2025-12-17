@@ -3,6 +3,7 @@
   imports = [
     ./sketchybar
     ./aerospace.nix
+    ./jankyborders.nix
   ];
 
   services.ipfs.enable = true;
