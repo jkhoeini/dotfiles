@@ -49,6 +49,7 @@
     raycast
     ripgrep
     rlwrap
+    stow
     tinymist
     typst
     vim

@@ -10,10 +10,6 @@
   homebrew.brews = [
     # Plugin manager for zsh, inspired by antigen and antibody
     "antidote"
-    # Remove large files or passwords from Git history like git-filter-branch
-    # "bfg"
-    # OCR (Optical Character Recognition) engine
-    # "tesseract"
     # GNU Privacy Guard (OpenPGP)
     "gnupg"
     # Create, run, and share large language models (LLMs)
@@ -23,10 +19,6 @@
     }
     # Pinentry for GPG on Mac
     "pinentry-mac"
-    # Organize software neatly under a single directory tree (e.g. /usr/local)
-    "stow"
-    # Convert images to computer generated art using Delaunay triangulation
-    # "triangle"
     # Check your $HOME for unwanted files and directories
     "xdg-ninja"
     # GNU Emacs text editor
@@ -52,8 +44,6 @@
     "brave-browser"
     # Open-source browser prompter
     "browserosaurus"
-    # Run Stable Diffusion locally
-    # "diffusionbee"
     # App to build and share containerised applications and microservices
     "docker-desktop"
     # Web browser
@@ -81,8 +71,6 @@
     "hammerspoon"
     # Utility to hide menu bar items
     "hiddenbar"
-    # Keyboard customiser
-    # "karabiner-elements"
     # Free and open-source painting and sketching program
     "krita"
     # Simple Gtk# Paint Program

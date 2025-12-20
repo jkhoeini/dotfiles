@@ -476,3 +476,16 @@ vscode "ziyasal.vscode-open-in-github"
   ;; xbar ; menubar super app
   ;; zstd
 #+end_quote
+
+#+begin_quote
+    # Remove large files or passwords from Git history like git-filter-branch
+    # "bfg"
+    # OCR (Optical Character Recognition) engine
+    # "tesseract"
+    # Convert images to computer generated art using Delaunay triangulation
+    # "triangle"
+    # Run Stable Diffusion locally
+    # "diffusionbee"
+    # Keyboard customiser
+    # "karabiner-elements"
+#+end_quote

@@ -11,20 +11,17 @@ unless exec?('brew')
   system 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
 end
 
-unless exec?('emacs')
-  puts 'Installing Emacs'
-  system 'brew install d12frosted/emacs-plus/emacs-plus@30 ' \
-         '--with-native-comp --with-modern-vscode-icon --with-xwidgets ' \
-         '--with-imagemagick --with-compress-install --with-no-frame-refocus'
-end
-
-unless exec?('stow')
-  puts 'Installing GNU Stow'
-  system 'brew install stow'
+unless exec?('nix')
+  puts 'Installing Nix'
+  system 'sh <(curl -L https://nixos.org/nix/install)'
+  system 'sudo rm -f /etc/nix/nix.conf'
 end
 
 puts 'Linking dotfiles'
 system 'stow -t $HOME home_links'
+
+puts 'Applying nix configs'
+system 'sudo nix --extra-experimental-features \'nix-command flakes\' run nix-darwin -- switch --flake ./nix'
 
 unless File.exist?(File.expand_path('~/dotemacs/doom'))
   puts 'Installing Doom Emacs'

@@ -1,5 +1,6 @@
 {
   username,
+  hostname,
   inputs,
   system,
   ...
@@ -20,7 +21,7 @@
   system.primaryUser = username;
 
   networking.computerName = "${username}'s work macbook pro";
-  networking.hostName = "${username}-work-macbook-pro";
+  networking.hostName = hostname;
   networking.knownNetworkServices = [
     "USB 10/100/1000 LAN"
     "Thunderbolt Ethernet Slot 0"
@@ -28,7 +29,7 @@
     "Thunderbolt Bridge"
     "iPhone USB"
   ];
-  networking.dns = [ "127.0.0.1" ];
+  networking.dns = [ ];
 
   nix.settings.experimental-features = [
     "nix-command"

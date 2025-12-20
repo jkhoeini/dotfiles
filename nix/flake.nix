@@ -21,6 +21,7 @@
     let
       system = "aarch64-darwin";
       username = "mohammadk";
+      hostname = "${username}-work-macbook-pro";
 
       overlay = final: prev: {
         jj-fzf = final.callPackage ./pkgs/jj-fzf { };
@@ -53,13 +54,18 @@
         ];
 
         specialArgs = {
-          inherit inputs system username;
+          inherit
+            inputs
+            system
+            username
+            hostname
+            ;
         };
       };
     in
     {
       darwinConfigurations = {
-        work_macbook = work-macbook-config;
+        "${hostname}" = work-macbook-config;
         default = work-macbook-config;
       };
     };
