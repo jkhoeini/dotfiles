@@ -19,6 +19,8 @@
     }
     # Pinentry for GPG on Mac
     "pinentry-mac"
+    # Quickly create and run optimised Windows, macOS and Linux virtual machines
+    # "quickemu-project/quickemu/quickemu"
     # Check your $HOME for unwanted files and directories
     "xdg-ninja"
     # GNU Emacs text editor

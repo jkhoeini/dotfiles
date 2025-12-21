@@ -9,6 +9,8 @@
     l = "eza -aa";
     ll = "eza -lah --icons --group-directories-first --git";
 
+    "ga." = "ga .";
+
     ps = "procs --tree";
     top = "btm";
 
