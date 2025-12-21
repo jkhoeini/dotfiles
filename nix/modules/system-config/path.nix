@@ -10,7 +10,7 @@ in
     "${home}/.cargo/bin"
     "${home}/.deno/bin"
     "${home}/Library/Application\\ Support/JetBrains/Toolbox/scripts"
-    "${home}/dotemacs/doom/bin"
+    "${home}/.config/emacs/bin"
     "${home}/.luarocks/bin"
     "${home}/Library/Application\\ Support/Coursier/bin"
     "${home}/.antigravity/antigravity/bin"

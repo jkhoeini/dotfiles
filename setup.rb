@@ -23,10 +23,9 @@ system 'stow -t $HOME home_links'
 puts 'Applying nix configs'
 system 'sudo nix --extra-experimental-features \'nix-command flakes\' run nix-darwin -- switch --flake ./nix'
 
-unless File.exist?(File.expand_path('~/dotemacs/doom'))
+unless File.exist?(File.expand_path('~/.config/emacs'))
   puts 'Installing Doom Emacs'
-  system 'git clone --depth 1 https://github.com/doomemacs/doomemacs ~/dotemacs/doom'
-  system 'ln -s ~/dotemacs/doom ~/.emacs.d'
+  system 'git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs'
   system 'brew services restart d12frosted/emacs-plus/emacs-plus@30'
 end
 
