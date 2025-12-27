@@ -63,3 +63,6 @@
 ;; (package! ob-aider
 ;;   :recipe (:host github :repo "localredhead/ob-aider.el"))
 (package! eat :recipe (:host codeberg :repo "akib/emacs-eat"))
+(package! drepl)
+(package! leetcode)
+(package! mise)

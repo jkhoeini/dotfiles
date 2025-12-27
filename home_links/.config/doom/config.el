@@ -94,6 +94,7 @@
                 (setq-local lsp-enabled-clients '(deno-ls))))))
 
 (map! :n "-" #'dired-jump)
+(map! :leader :desc "Run command" :n "SPC" 'execute-extended-command)
 
 (require 'typst-ts-mode)
 (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
@@ -194,9 +195,9 @@ current buffer's, reload dir-locals."
   (setq
    gptel-model 'devstral-small-2:latest
    gptel-backend (gptel-make-ollama "Ollama"
-                   :host "localhost:11434"
-                   :stream t
-                   :models '(devstral-small-2:latest magistral:latest))))
+                                    :host "localhost:11434"
+                                    :stream t
+                                    :models '(devstral-small-2:latest magistral:latest))))
 
 ;; (use-package! magit-gptcommit
 ;;   :config
@@ -226,3 +227,21 @@ current buffer's, reload dir-locals."
          +eshell-backend 'eat
          eat-enable-shell-integration t
          eshell-visual-commands '("htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini")))
+
+(add-hook 'eshell-mode-hook (cmd! (eldoc-mode -1)))
+
+(set-eshell-alias!
+ "-" "cd -"
+ "..." "../.."
+ "...." "../../.."
+ "....." "../../../.."
+ "w" "type -a $*")
+
+(use-package! leetcode
+  :config
+  (setq leetcode-save-solutions t)
+  (setq leetcode-directory "~/Dev/leetcode"))
+
+(use-package! mise
+  :config
+  (global-mise-mode))
