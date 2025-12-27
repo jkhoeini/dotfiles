@@ -17,7 +17,7 @@
     docker-compose
     duckdb
     dust
-    eza
+    # eza # better ls. disabled: no need
     fd
     fzf
     git
