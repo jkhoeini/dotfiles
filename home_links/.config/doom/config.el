@@ -245,3 +245,6 @@ current buffer's, reload dir-locals."
 (use-package! mise
   :config
   (global-mise-mode))
+
+(after! lsp-mode
+  (setq lsp-file-watch-ignored-directories (append lsp-file-watch-ignored-directories '(".local/state" ".local/share" ".local/pipx" ".local/node_modules"))))
