@@ -11,7 +11,6 @@
     ps = "procs --tree";
     top = "btm";
 
-    de = "emacs --init-directory $HOME/dotemacs/doom";
     em-reset = "brew services restart d12frosted/emacs-plus/emacs-plus@30";
     e = "$EDITOR";
 
