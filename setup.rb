@@ -38,12 +38,3 @@ unless File.exist?(File.expand_path('~/.intellimacs'))
   puts 'Installing Intellimacs'
   system 'git clone https://github.com/MarcoIeni/intellimacs ~/.intellimacs'
 end
-
-requested_luarocks_plugins = <<-HEREDOC.gsub(/;.*$/, '').strip.split(/\s+/)
-  fennel
-HEREDOC
-
-installed_luarocks_plugins = `luarocks list --porcelain`
-requested_luarocks_plugins
-  .reject { |plugin| installed_luarocks_plugins.include? plugin }
-  .each { |plugin| `luarocks install #{plugin}` }
