@@ -77,6 +77,8 @@
     "krita"
     # Simple Gtk# Paint Program
     "pinta"
+    # app launcher. kept as brew since it's more uptodate
+    "raycast"
     # Tool that provides consistent, highly configurable symbols for apps
     "sf-symbols"
     # Video game digital distribution service

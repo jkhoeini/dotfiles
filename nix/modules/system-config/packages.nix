@@ -46,7 +46,7 @@
     obsidian
     procs
     qmk
-    raycast
+    # raycast # disabled since it's too old
     ripgrep
     rlwrap
     stow
