@@ -1,6 +1,6 @@
 { ... }:
 {
-  services.aerospace.enable = true;
+  services.aerospace.enable = false;
   services.aerospace.settings = {
     # See: https://nikitabobko.github.io/AeroSpace/guide#layouts
     accordion-padding = 20;
