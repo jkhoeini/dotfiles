@@ -7,7 +7,9 @@
   ];
 
   services.ipfs.enable = true;
-  services.nextdns.enable = true;
+
+  # cloud based service
+  services.nextdns.enable = false;
 
   local.services.sketchybar.enable = false;
 }
