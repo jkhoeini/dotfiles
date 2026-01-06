@@ -1,2 +1,0 @@
-[tools]
-"http:deps" = { version = "0.2.5", url = "https://gitlab.com/andreyorst/deps.fnl/-/raw/0.2.5/deps" }
