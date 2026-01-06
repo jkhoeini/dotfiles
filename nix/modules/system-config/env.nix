@@ -1,10 +1,13 @@
-{ ... }:
+{ config, username, ... }:
+let
+  home = toString(config.users.users.${username}.home);
+in
 {
   environment.variables = rec {
-    XDG_DATA_HOME = "$HOME/.local/share";
-    XDG_CONFIG_HOME = "$HOME/.config";
-    XDG_STATE_HOME = "$HOME/.local/state";
-    XDG_CACHE_HOME = "$HOME/.cache";
+    XDG_DATA_HOME = "${home}/.local/share";
+    XDG_CONFIG_HOME = "${home}/.config";
+    XDG_STATE_HOME = "${home}/.local/state";
+    XDG_CACHE_HOME = "${home}/.cache";
     XDG_RUNTIME_DIR = "$TMPDIR";
 
     ANDROID_USER_HOME = "${XDG_DATA_HOME}/android";
@@ -29,7 +32,7 @@
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true";
     PUPPETEER_EXECUTABLE_PATH = "`which chromium`";
     EDITOR = "ec";
-    LUA_PATH = "/opt/homebrew/Cellar/luarocks/3.12.2/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?/init.lua;/opt/homebrew/lib/lua/5.4/?.lua;/opt/homebrew/lib/lua/5.4/?/init.lua;./?.lua;./?/init.lua;$HOME/.luarocks/share/lua/5.4/?.lua;$HOME/.luarocks/share/lua/5.4/?/init.lua";
+    LUA_PATH = "/opt/homebrew/Cellar/luarocks/3.12.2/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?/init.lua;/opt/homebrew/lib/lua/5.4/?.lua;/opt/homebrew/lib/lua/5.4/?/init.lua;./?.lua;./?/init.lua;${home}/.luarocks/share/lua/5.4/?.lua;${home}/.luarocks/share/lua/5.4/?/init.lua";
     LUA_CPATH = "/opt/homebrew/lib/lua/5.4/?.so;/opt/homebrew/lib/lua/5.4/loadall.so;./?.so;$HOME/.luarocks/lib/lua/5.4/?.so";
     # help cursor-ide detect command is finished
     PROMPT_EOL_MARK = "“”";

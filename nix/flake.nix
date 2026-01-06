@@ -37,6 +37,7 @@
           ./modules/services
           ./modules/system-config
           ./modules/homebrew
+          ./modules/agents
           ./work-stuff.nix
 
           # home-manager modules
