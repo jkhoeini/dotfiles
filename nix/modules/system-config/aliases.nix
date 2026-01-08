@@ -12,7 +12,7 @@
     top = "btm";
 
     em-reset = "brew services restart d12frosted/emacs-plus/emacs-plus@30";
-    e = "$EDITOR";
+    e = "emacsclient -n -c";
 
     w = "type -a";
 

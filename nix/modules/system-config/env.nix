@@ -31,7 +31,10 @@ in
 
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true";
     PUPPETEER_EXECUTABLE_PATH = "`which chromium`";
-    EDITOR = "ec";
+    VISUAL = "emacsclient";
+    EDITOR = "emacsclient";
+    GIT_EDITOR = "emacsclient -c";
+    JJ_EDITOR = "emacsclient -c";
     LUA_PATH = "/opt/homebrew/Cellar/luarocks/3.12.2/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?.lua;/opt/homebrew/share/lua/5.4/?/init.lua;/opt/homebrew/lib/lua/5.4/?.lua;/opt/homebrew/lib/lua/5.4/?/init.lua;./?.lua;./?/init.lua;${home}/.luarocks/share/lua/5.4/?.lua;${home}/.luarocks/share/lua/5.4/?/init.lua";
     LUA_CPATH = "/opt/homebrew/lib/lua/5.4/?.so;/opt/homebrew/lib/lua/5.4/loadall.so;./?.so;$HOME/.luarocks/lib/lua/5.4/?.so";
     # help cursor-ide detect command is finished
