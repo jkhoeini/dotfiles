@@ -217,9 +217,9 @@ current buffer's, reload dir-locals."
   (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
 
 (after! (eshell em-term)
-  (setq! eshell-visual-commands (append eshell-visual-commands '("bat" "jj" "htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini"))
-         eshell-visual-subcommands (append eshell-visual-subcommands '(("git" "log" "diff" "show")))
-         eshell-visual-options (append eshell-visual-options '(("git" "--help" "--paginate")))
+  (setq! eshell-visual-commands (append eshell-visual-commands '("bat" "htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini"))
+         ;; eshell-visual-subcommands (append eshell-visual-subcommands '(("git" "log" "diff" "show")))
+         ;; eshell-visual-options (append eshell-visual-options '(("git" "--help" "--paginate")))
          eshell-destroy-buffer-when-process-dies nil
          eshell-visual-command-function #'eshell-vterm-visual-command)
 
@@ -230,7 +230,8 @@ current buffer's, reload dir-locals."
    "..." "../.."
    "...." "../../.."
    "....." "../../../.."
-   "w" "type -a $*"))
+   "w" "type -a $*"
+   "j" "jj --no-pager $*"))
 
 (defun +term-auto-normal-state-h (proc _event)
   "Switch to normal state when the term process dies."
@@ -294,4 +295,12 @@ current buffer's, reload dir-locals."
 (defun jj-desc ()
   (interactive)
   (term "jj desc"))
+
+(defun jj-new ()
+  (interactive)
+  (term "jj new"))
+
+(defun jj-commit ()
+  (interactive)
+  (term "jj commit"))
 
