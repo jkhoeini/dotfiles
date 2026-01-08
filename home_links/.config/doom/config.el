@@ -216,26 +216,51 @@ current buffer's, reload dir-locals."
   (add-to-list 'org-babel-load-languages '(aider . t))
   (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
 
-(use-package! eat
-  :after eshell
-  :hook ((eshell-load . eat-eshell-mode)
-         (eshell-load . eat-eshell-visual-command-mode))
-  :config
-  (setq! eat-shell "/opt/homebrew/bin/zsh"
-         eat-scroll-to-bottom-on-input t
-         shell-file-name eat-shell
-         +eshell-backend 'eat
-         eat-enable-shell-integration t
-         eshell-visual-commands '("htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini")))
+(after! (eshell em-term)
+  (setq! eshell-visual-commands (append eshell-visual-commands '("bat" "jj" "htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini"))
+         eshell-visual-subcommands (append eshell-visual-subcommands '(("git" "log" "diff" "show")))
+         eshell-visual-options (append eshell-visual-options '(("git" "--help" "--paginate")))
+         eshell-destroy-buffer-when-process-dies nil
+         eshell-visual-command-function #'eshell-vterm-visual-command)
 
-(add-hook 'eshell-mode-hook (cmd! (eldoc-mode -1)))
+  (add-hook 'eshell-mode-hook (cmd! (eldoc-mode -1)))
 
-(set-eshell-alias!
- "-" "cd -"
- "..." "../.."
- "...." "../../.."
- "....." "../../../.."
- "w" "type -a $*")
+  (set-eshell-alias!
+   "-" "cd -"
+   "..." "../.."
+   "...." "../../.."
+   "....." "../../../.."
+   "w" "type -a $*"))
+
+(defun +term-auto-normal-state-h (proc _event)
+  "Switch to normal state when the term process dies."
+  (unless (process-live-p proc)
+    (let ((buf (process-buffer proc)))
+      (when (buffer-live-p buf)
+        (with-current-buffer buf
+          (evil-normal-state))))))
+
+(after! term
+  (add-hook 'term-exec-hook
+            (lambda ()
+              (let ((proc (get-buffer-process (current-buffer))))
+                (set-process-sentinel proc #'+term-auto-normal-state-h))))
+
+  (map! :map term-mode-map
+        :n "q" (cmds! (not (process-live-p (get-buffer-process (current-buffer))))
+                      #'kill-current-buffer)))
+
+(after! vterm
+  (setq! vterm-kill-buffer-on-exit nil)
+
+  (add-hook 'vterm-exit-functions
+            (lambda (buf _event)
+              (with-current-buffer buf
+                (evil-normal-state))))
+
+  (map! :map vterm-mode-map
+        :n "q" (cmds! (not (process-live-p (get-buffer-process (current-buffer))))
+                      #'kill-current-buffer)))
 
 (use-package! leetcode
   :config
@@ -253,3 +278,20 @@ current buffer's, reload dir-locals."
                   ".local/share"
                   ".local/pipx"
                   ".local/node_modules"))))
+
+(use-package! vc-jj)
+
+(map! :leader :prefix "g" :desc "Run vc-dir-root" :n "v" (cmd! (vc-dir-root)))
+
+(defun jj-st ()
+  (interactive)
+  (term "jj --no-pager st"))
+
+(defun jj-log ()
+  (interactive)
+  (term "jj --no-pager log -r 'all()' --limit 50"))
+
+(defun jj-desc ()
+  (interactive)
+  (term "jj desc"))
+

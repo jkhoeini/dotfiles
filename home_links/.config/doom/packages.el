@@ -62,7 +62,11 @@
 ;; (package! aidermacs)
 ;; (package! ob-aider
 ;;   :recipe (:host github :repo "localredhead/ob-aider.el"))
-(package! eat :recipe (:host codeberg :repo "akib/emacs-eat"))
+;; eat is worst than vterm
+;; (package! eat :recipe (:host codeberg :repo "akib/emacs-eat"))
 (package! drepl)
 (package! leetcode)
 (package! mise)
+(package! vc-jj)
+;; jj-mode can't parse json output
+;; (package! jj-mode :recipe (:host github :repo "bolivier/jj-mode.el"))
