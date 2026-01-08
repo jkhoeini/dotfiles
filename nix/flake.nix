@@ -69,5 +69,10 @@
         "${hostname}" = work-macbook-config;
         default = work-macbook-config;
       };
+
+      # Expose packages for development
+      packages.aarch64-darwin = {
+        inherit (nixpkgs.legacyPackages.${system}.extend overlay) jj-fzf;
+      };
     };
 }

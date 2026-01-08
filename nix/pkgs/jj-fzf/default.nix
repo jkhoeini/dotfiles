@@ -1,9 +1,11 @@
-{ lib
-, stdenv
-, fetchurl
-, gnumake
-, zstd
-, makeWrapper
+{
+  lib,
+  stdenv,
+  fetchurl,
+  gnumake,
+  zstd,
+  makeWrapper,
+  pandoc,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -19,6 +21,7 @@ stdenv.mkDerivation (finalAttrs: {
     gnumake
     zstd
     makeWrapper
+    pandoc
   ];
 
   dontBuild = true;
@@ -54,9 +57,9 @@ stdenv.mkDerivation (finalAttrs: {
 
     # If a manpage is already shipped in the tarball, install it.
     # (We do not generate it with pandoc during the build.)
-    if [ -f doc/jj-fzf.1 ]; then
+    if [ -f doc/jj-fzf.1.md ]; then
       mkdir -p "$out/share/man/man1"
-      install -m 0644 doc/jj-fzf.1 "$out/share/man/man1/jj-fzf.1"
+      pandoc -s -t man doc/jj-fzf.1.md -o "$out/share/man/man1/jj-fzf.1"
     fi
 
     # Provide a stable entrypoint in $out/bin.
