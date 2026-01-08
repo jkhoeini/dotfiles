@@ -1,6 +1,6 @@
 { config, username, ... }:
 let
-  home = toString(config.users.users.${username}.home);
+  home = toString (config.users.users.${username}.home);
 in
 {
   environment.variables = rec {
@@ -20,7 +20,10 @@ in
     LESSHISTFILE = "${XDG_STATE_HOME}/less/history";
     MINIKUBE_HOME = "${XDG_DATA_HOME}/minikube";
     TERMINFO = "${XDG_DATA_HOME}/terminfo";
-    TERMINFO_DIRS = [ "${XDG_DATA_HOME}/terminfo" ];
+    TERMINFO_DIRS = [
+      "${XDG_DATA_HOME}/terminfo"
+      "/Applications/Ghostty.app/Contents/Resources/terminfo"
+    ];
     NODE_REPL_HISTORY = "${XDG_DATA_HOME}/node_repl_history";
     NPM_CONFIG_USERCONFIG = "${XDG_CONFIG_HOME}/npm/npmrc";
     _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${XDG_CONFIG_HOME}/java -Djavafx.cachedir=${XDG_CACHE_HOME}/openjfx";
