@@ -14,5 +14,6 @@ in
     "${home}/.luarocks/bin"
     "${home}/Library/Application\\ Support/Coursier/bin"
     "${home}/.antigravity/antigravity/bin"
+    "${home}/.lmstudio/bin"
   ];
 }

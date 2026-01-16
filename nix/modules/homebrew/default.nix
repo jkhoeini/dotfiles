@@ -10,6 +10,8 @@
   homebrew.brews = [
     # Plugin manager for zsh, inspired by antigen and antibody
     "antidote"
+    # Lua Lisp Language
+    "fennel"
     # GNU Privacy Guard (OpenPGP)
     "gnupg"
     # Create, run, and share large language models (LLMs)
@@ -40,6 +42,8 @@
     "android-platform-tools"
     # Tools for building Android applications
     "android-studio"
+    # Private desktop AI chat application
+    "anythingllm"
     # Chromium based browser
     "arc"
     # Web browser focusing on privacy
@@ -71,10 +75,14 @@
     "ghostty"
     # Desktop automation application
     "hammerspoon"
+    # Speech to text application
+    "handy"
     # Utility to hide menu bar items
     "hiddenbar"
     # Free and open-source painting and sketching program
     "krita"
+    # Discover, download, and run local LLMs
+    "lm-studio"
     # Simple Gtk# Paint Program
     "pinta"
     # app launcher. kept as brew since it's more uptodate
