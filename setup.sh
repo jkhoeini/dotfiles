@@ -96,6 +96,7 @@ linux ()
 
   guix pull
   guix package -m guix/manifest.scm
+  guix home reconfigure guix/home/home-configuration.scm
 }
 
 os="$(uname -s)"
