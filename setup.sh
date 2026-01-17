@@ -95,6 +95,7 @@ linux ()
   fi
 
   guix pull
+  guix package -m guix/manifest.scm
 }
 
 os="$(uname -s)"
