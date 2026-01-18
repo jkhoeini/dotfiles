@@ -95,7 +95,7 @@ linux ()
   fi
 
   guix pull
-  guix home reconfigure guix/home/home-configuration.scm
+  guix home reconfigure guix/home-configuration.scm
 }
 
 os="$(uname -s)"
