@@ -6,11 +6,20 @@ command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
-macos ()
+common ()
 {
   # get the secrets
   eval "$(gpg --decrypt secrets.sh.gpg)"
 
+  if [[ ! -e "$HOME/.config/emacs" ]]; then
+    echo "Installing Doom Emacs"
+    git clone --depth 1 https://github.com/doomemacs/doomemacs "$XDG_CONFIG_HOME/emacs"
+    $XDG_CONFIG_HOME/emacs/bin/doom install
+  fi
+}
+
+macos ()
+{
   if ! command_exists brew; then
     echo "Installing HomeBrew"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -28,11 +37,7 @@ macos ()
   echo "Applying nix configs"
   sudo nix --extra-experimental-features "nix-command flakes" run nix-darwin -- switch --flake ./nix
 
-  if [[ ! -e "$HOME/.config/emacs" ]]; then
-    echo "Installing Doom Emacs"
-    git clone --depth 1 https://github.com/doomemacs/doomemacs "$HOME/.config/emacs"
-    brew services restart d12frosted/emacs-plus/emacs-plus@30
-  fi
+  brew services restart d12frosted/emacs-plus/emacs-plus@30
 
   if [[ ! -e "$HOME/.config/nvim" ]]; then
     echo "Installing LazyVim"
@@ -43,9 +48,6 @@ macos ()
     echo "Installing Intellimacs"
     git clone https://github.com/MarcoIeni/intellimacs "$HOME/.intellimacs"
   fi
-
-  # run the ruby setup
-  ./setup.rb
 }
 
 get_fs () {
@@ -96,7 +98,13 @@ linux ()
 
   guix pull
   guix home reconfigure guix/home-configuration.scm
+
+  yay --noconfirm -S zsh-antidote
 }
+
+## Run Setup
+
+common
 
 os="$(uname -s)"
 case "${os}" in 
