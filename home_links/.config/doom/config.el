@@ -203,9 +203,9 @@ current buffer's, reload dir-locals."
   (setq
    gptel-model 'devstral-small-2:latest
    gptel-backend (gptel-make-ollama "Ollama"
-                   :host "localhost:11434"
-                   :stream t
-                   :models '(devstral-small-2:latest magistral:latest))))
+                                    :host "localhost:11434"
+                                    :stream t
+                                    :models '(devstral-small-2:latest magistral:latest))))
 
 ;; (use-package! magit-gptcommit
 ;;   :config
@@ -239,11 +239,11 @@ current buffer's, reload dir-locals."
       :prefix "n"
       :desc "TODOs by stata"
       :n "t" (cmd! (org-ql-search (current-buffer)
-                     '(todo)
-                     :sort '(priority)
-                     :super-groups '((:todo "NOW")
-                                     (:todo "NEXT")
-                                     (:todo "LATER")))))
+                                  '(todo)
+                                  :sort '(priority)
+                                  :super-groups '((:todo "NOW")
+                                                  (:todo "NEXT")
+                                                  (:todo "LATER")))))
 
 (after! (eshell em-term)
   (setq! eshell-visual-commands (append eshell-visual-commands '("bat" "htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini"))
@@ -361,3 +361,7 @@ current buffer's, reload dir-locals."
       :desc "Majutsu status" "j" #'majutsu
       :desc "Majutsu log" "J" #'majutsu-log)
 
+(map! :leader :desc "EShell popup" :n "'" #'+eshell/toggle)
+(map! :leader :prefix "o" :desc "Telega" :n "T" telega-prefix-map)
+
+(setq! telega-directory (expand-file-name "telega" (getenv "XDG_STATE_HOME")))
