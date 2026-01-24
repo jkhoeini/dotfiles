@@ -7,11 +7,13 @@ if $RUN_ZPROF; then
 fi
 
 # Set PATH, MANPATH, etc., for Homebrew.
-eval "$(/opt/homebrew/bin/brew shellenv)"
-export HOMEBREW_EVAL_ALL=1
+if [[ -e /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    export HOMEBREW_EVAL_ALL=1
 
-source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+fi
 
 # The following lines were added by compinstall
 
@@ -23,7 +25,7 @@ zstyle :compinstall filename "$HOME/.zshrc"
 
 fpath+=~/.zfunc
 
-if [[ -e "$(brew --prefix)/share/zsh/site-functions" ]]; then
+if command -v brew 2>&1 >/dev/null && [[ -e "$(brew --prefix)/share/zsh/site-functions" ]]; then
     FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
 
@@ -68,7 +70,8 @@ zstyle ':completion:*:warnings' format "$fg[red]No matches for:$reset_color %d"
 zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
 zstyle ':completion:*' group-name ''
 
-source "$(brew --prefix)/share/antidote/antidote.zsh"
+command -v brew 2>&1 >/dev/null && source "$(brew --prefix)/share/antidote/antidote.zsh"
+[[ -e '/usr/share/zsh-antidote/antidote.zsh' ]] && source '/usr/share/zsh-antidote/antidote.zsh'
 antidote load ~/.config/antidote/plugins.txt
 
 alias -g ...='../..'
