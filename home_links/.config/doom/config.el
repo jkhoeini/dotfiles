@@ -231,7 +231,8 @@ current buffer's, reload dir-locals."
    "...." "../../.."
    "....." "../../../.."
    "w" "type -a $*"
-   "j" "jj --no-pager $*"))
+   "j" "jj --no-pager $*"
+   "ghre" "guix home reconfigure ~/src/dotfiles/guix/home-configuration.scm"))
 
 (defun +term-auto-normal-state-h (proc _event)
   "Switch to normal state when the term process dies."
@@ -304,3 +305,5 @@ current buffer's, reload dir-locals."
   (interactive)
   (term "jj commit"))
 
+(add-hook 'after-init-hook 'global-guix-prettify-mode)
+(add-hook 'scheme-mode-hook 'guix-devel-mode)

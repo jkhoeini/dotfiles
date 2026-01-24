@@ -70,3 +70,5 @@
 (package! vc-jj)
 ;; jj-mode can't parse json output
 ;; (package! jj-mode :recipe (:host github :repo "bolivier/jj-mode.el"))
+(package! guix)
+(package! build-farm)
