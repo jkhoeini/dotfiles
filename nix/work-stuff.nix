@@ -1,5 +1,9 @@
 { ... }:
 {
+  environment.shellAliases = {
+    oc = "GOOGLE_CLOUD_PROJECT=spotify-claude-code-trial VERTEX_LOCATION=europe-west4 opencode";
+  };
+
   homebrew.brews = [
     # User-friendly launcher for Bazel
     "bazelisk"
