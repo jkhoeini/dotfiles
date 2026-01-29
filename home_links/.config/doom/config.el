@@ -37,7 +37,12 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'doom-one)
-(setq doom-theme 'doom-nord)
+;; (setq doom-theme 'doom-nord)
+;; (setq doom-twilight-dark-variant "hard")      ; Darker background
+;; (setq doom-twilight-colorful-headers t)       ; Varied heading colors  
+;; (setq doom-twilight-brighter-comments t)      ; Cyan comments
+;; (setq doom-twilight-brighter-modeline t)      ; Blue-tinted modeline
+(setq doom-theme 'doom-twilight)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
