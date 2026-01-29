@@ -15,5 +15,6 @@ in
     "${home}/Library/Application\\ Support/Coursier/bin"
     "${home}/.antigravity/antigravity/bin"
     "${home}/.lmstudio/bin"
+    "${home}/.lmstudio/bin"
   ];
 }
