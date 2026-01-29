@@ -203,9 +203,9 @@ current buffer's, reload dir-locals."
   (setq
    gptel-model 'devstral-small-2:latest
    gptel-backend (gptel-make-ollama "Ollama"
-                                    :host "localhost:11434"
-                                    :stream t
-                                    :models '(devstral-small-2:latest magistral:latest))))
+                   :host "localhost:11434"
+                   :stream t
+                   :models '(devstral-small-2:latest magistral:latest))))
 
 ;; (use-package! magit-gptcommit
 ;;   :config
@@ -223,6 +223,27 @@ current buffer's, reload dir-locals."
 (after! (org ob-aider)
   (add-to-list 'org-babel-load-languages '(aider . t))
   (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
+
+(after! org
+  (setq! org-todo-keywords
+         '((sequence "NOW(n)" "NEXT(x)" "LATER(l)" "PROJ(p)" "|" "DONE(d)" "CANCEL(c)")
+           (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")))
+
+  ;; Count all descendant TODOs, not just direct children
+  (setq! org-hierarchical-todo-statistics nil)
+
+  ;; Auto-update cookies when TODO state changes
+  (add-hook 'org-after-todo-state-change-hook 'org-update-parent-todo-statistics))
+
+(map! :leader
+      :prefix "n"
+      :desc "TODOs by stata"
+      :n "t" (cmd! (org-ql-search (current-buffer)
+                     '(todo)
+                     :sort '(priority)
+                     :super-groups '((:todo "NOW")
+                                     (:todo "NEXT")
+                                     (:todo "LATER")))))
 
 (after! (eshell em-term)
   (setq! eshell-visual-commands (append eshell-visual-commands '("bat" "htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini"))
@@ -315,3 +336,8 @@ current buffer's, reload dir-locals."
 
 (add-hook 'after-init-hook 'global-guix-prettify-mode)
 (add-hook 'scheme-mode-hook 'guix-devel-mode)
+
+(use-package! org-ql
+  :after org
+  :commands (org-ql-search org-ql-view))
+

@@ -56,7 +56,8 @@
 (package! typst-ts-mode
   :recipe (:type git :host codeberg :repo "meow_king/typst-ts-mode"))
 (package! paren-face)
-;; (package! gptel :recipe (:nonrecursive t))
+(package! gptel :recipe (:nonrecursive t))
+(package! eca :recipe (:host github :repo "editor-code-assistant/eca-emacs" :files ("*.el")))
 ;; (package! mcp)
 ;; (package! magit-gptcommit)
 ;; (package! aidermacs)
@@ -72,3 +73,4 @@
 ;; (package! jj-mode :recipe (:host github :repo "bolivier/jj-mode.el"))
 (package! guix)
 (package! build-farm)
+(package! org-ql)
