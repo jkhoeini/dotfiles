@@ -74,3 +74,4 @@
 (package! guix)
 (package! build-farm)
 (package! org-ql)
+(package! majutsu :recipe (:host github :repo "0WD0/majutsu"))

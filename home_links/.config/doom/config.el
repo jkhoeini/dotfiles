@@ -341,3 +341,23 @@ current buffer's, reload dir-locals."
   :after org
   :commands (org-ql-search org-ql-view))
 
+;; Majutsu: Magit-style interface for Jujutsu
+;; https://github.com/0WD0/majutsu
+(use-package! majutsu
+  :after magit
+  :commands (majutsu majutsu-log)
+  :config
+  ;; Set the jj executable path (auto-detect)
+  (setq majutsu-jj-executable (executable-find "jj"))
+
+  ;; Confirm before destructive operations
+  (setq majutsu-confirm-critical-actions t)
+
+  ;; Word-level diff refinement for better readability
+  (setq majutsu-diff-refine-hunk t))
+
+(map! :leader
+      :prefix "g"
+      :desc "Majutsu status" "j" #'majutsu
+      :desc "Majutsu log" "J" #'majutsu-log)
+
