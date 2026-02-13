@@ -10,17 +10,62 @@ Run this in the terminal. It will setup homebrew and emacs and install dependenc
 ./setup.sh
 #+end_src
 
-* TODO setup
-- +[ ] Setup https://gitlab.com/mtekman/org-tanglesync.el for diffing on tangling+
-- +[ ] change from gnu stow to nix home_manager+
-- [ ] templatize git config using nix
-- [ ] implement command pallet for hammerspoon
-- [X] precompile fennel code in hammerspoon
-- [ ] implement git based plugin fetching in hammerspoon
-- [ ] create proper repl for hammerspoon-fennel
-- [X] create a kanata flake and add its config and autostart on startup
-- [X] replace asdf with mise
-- [X] replace alacritty and zellij with wezterm
+* Roadmap: Unified Dotfiles Architecture
+
+The goal is to end up with a clean, layered setup that works across macOS
+and Linux with minimal duplication and a single source of truth for configs.
+
+** Target structure
+
+#+begin_example
+dotfiles/
+  config/              # shared config files (renamed from home_links/)
+    doom/
+    git/
+    ghostty/
+    zsh/               # .zshrc, .zprofile
+    ...
+  settings/            # per-machine profiles
+    default.toml
+    work-macbook.toml
+    personal-macbook.toml
+    linux-laptop.toml
+  nix/                 # macOS: nix-darwin + home-manager
+  guix/                # Linux: guix home
+  setup.sh             # thin bootstrap only (install nix or guix, then stop)
+#+end_example
+
+** Layers
+
+1. =config/= -- platform-neutral config files. Single source of truth for app
+   configs (doom, git, ghostty, zsh, etc.). Consumed by both Guix Home and
+   home-manager via symlinks. Replaces stow.
+
+2. =settings/= -- per-machine settings (user name, email, feature flags).
+   Read by nix and guix configs to templatize things like git identity.
+   Configs that vary per machine (e.g. git user) use native include
+   mechanisms (git =[include]=) with a machine-specific file generated
+   by nix/guix from the settings.
+
+3. =nix/= -- macOS only. nix-darwin for system config (defaults, services,
+   Homebrew) + home-manager for dotfile deployment and packages.
+
+4. =guix/= -- Linux only. Guix Home for dotfile deployment, packages,
+   and services.
+
+5. =setup.sh= -- bootstrap only. Installs Nix or Guix, prints what to
+   run next. No stow, no package installs, no service management.
+
+** Migration steps
+
+1. Rename =home_links/= to =config/=, update all references
+2. Move stow-managed files into home-manager =xdg.configFile= on macOS
+3. Create =settings/= with per-machine profiles
+4. Templatize git config (use git =[include]= for machine-specific identity)
+5. Expand Guix Home to full parity (packages, env vars, aliases, PATH)
+6. Slim =setup.sh= to bootstrap-only
+7. Add second darwin config for personal MacBook
+8. Drop stow dependency
 
 * TODO backups
 ** zplug packages
