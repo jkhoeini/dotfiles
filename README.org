@@ -11,7 +11,7 @@ Run this in the terminal. It will setup homebrew and emacs and install dependenc
 #+end_src
 
 * TODO setup
-- [ ] Setup https://gitlab.com/mtekman/org-tanglesync.el for diffing on tangling
+- +[ ] Setup https://gitlab.com/mtekman/org-tanglesync.el for diffing on tangling+
 - +[ ] change from gnu stow to nix home_manager+
 - [ ] templatize git config using nix
 - [ ] implement command pallet for hammerspoon
