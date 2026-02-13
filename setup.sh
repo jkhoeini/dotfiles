@@ -37,6 +37,9 @@ macos ()
   echo "Applying nix configs"
   sudo nix --extra-experimental-features "nix-command flakes" run nix-darwin -- switch --flake ./nix
 
+  echo "Setting login shell to Nix zsh"
+  chsh -s /run/current-system/sw/bin/zsh
+
   brew services restart d12frosted/emacs-plus/emacs-plus@30
 
   if [[ ! -e "$HOME/.config/nvim" ]]; then
