@@ -5,7 +5,6 @@
   homebrew.onActivation.cleanup = "none"; # "none", "uninstall", "zap"
 
   homebrew.masApps = { };
-  homebrew.whalebrews = [ ];
 
   homebrew.brews = [
     # Plugin manager for zsh, inspired by antigen and antibody
@@ -38,6 +37,8 @@
   ];
 
   homebrew.casks = [
+    # Flashcard learning app
+    "anki"
     # Android SDK component
     "android-platform-tools"
     # Tools for building Android applications
@@ -73,8 +74,6 @@
     "font-sf-pro"
     # Terminal emulator that uses platform-native UI and GPU acceleration
     "ghostty"
-    # Desktop automation application
-    "hammerspoon"
     # Speech to text application
     "handy"
     # Utility to hide menu bar items

@@ -1,7 +1,6 @@
-{ pkgs, ... }:
+{ pkgs, inputs, system, ... }:
 {
   environment.systemPackages = with pkgs; [
-    anki
     babashka
     bash
     bat
@@ -56,5 +55,6 @@
     yabai
     yt-dlp
     zed-editor
+    inputs.hammerspoon.packages.${system}.default
   ];
 }

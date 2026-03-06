@@ -5,7 +5,8 @@ let
 in
 {
   environment.systemPath = [
-    "${home}/.local/bin/"
+    "${home}/.local/bin"
+    "/opt/spotify-devex/bin"
     "${home}/.poetry/bin"
     "${home}/.cargo/bin"
     "${home}/.deno/bin"

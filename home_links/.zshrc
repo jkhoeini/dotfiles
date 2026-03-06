@@ -128,3 +128,17 @@ compdef _nixhome_complete nixhome
 if $RUN_ZPROF; then
     zprof
 fi
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/mohammadk/.lmstudio/bin"
+# End of LM Studio CLI section
+
+
+# bun completions
+[ -s "/Users/mohammadk/.bun/_bun" ] && source "/Users/mohammadk/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+alias cw='cd /Users/mohammadk/Documents/claude-docs && claude "Load write, google-workspace, and brainstorming skills."'

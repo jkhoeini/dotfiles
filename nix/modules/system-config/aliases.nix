@@ -6,6 +6,8 @@
     bs = "brew search";
     bd = "brew desc";
 
+    c = "/opt/spotify-devex/bin/claude";
+
     "ga." = "ga .";
 
     ps = "procs --tree";

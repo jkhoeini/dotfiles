@@ -35,7 +35,7 @@ macos ()
   stow -t "$HOME" home_links
 
   echo "Applying nix configs"
-  sudo nix --extra-experimental-features "nix-command flakes" run nix-darwin -- switch --flake ./nix
+  sudo nix --extra-experimental-features "nix-command flakes" run nix-darwin -- switch --flake './nix#default'
 
   echo "Setting login shell to Nix zsh"
   chsh -s /run/current-system/sw/bin/zsh

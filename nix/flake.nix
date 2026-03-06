@@ -9,6 +9,9 @@
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    hammerspoon.url = "github:jkhoeini/hammerspoon/dev";
+    hammerspoon.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -16,6 +19,7 @@
       nixpkgs,
       nix-darwin,
       home-manager,
+      hammerspoon,
       ...
     }:
     let
