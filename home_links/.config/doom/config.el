@@ -203,9 +203,9 @@ current buffer's, reload dir-locals."
   (setq
    gptel-model 'devstral-small-2:latest
    gptel-backend (gptel-make-ollama "Ollama"
-                                    :host "localhost:11434"
-                                    :stream t
-                                    :models '(devstral-small-2:latest magistral:latest))))
+                   :host "localhost:11434"
+                   :stream t
+                   :models '(devstral-small-2:latest magistral:latest))))
 
 ;; (use-package! magit-gptcommit
 ;;   :config
@@ -239,11 +239,11 @@ current buffer's, reload dir-locals."
       :prefix "n"
       :desc "TODOs by stata"
       :n "t" (cmd! (org-ql-search (current-buffer)
-                                  '(todo)
-                                  :sort '(priority)
-                                  :super-groups '((:todo "NOW")
-                                                  (:todo "NEXT")
-                                                  (:todo "LATER")))))
+                     '(todo)
+                     :sort '(priority)
+                     :super-groups '((:todo "NOW")
+                                     (:todo "NEXT")
+                                     (:todo "LATER")))))
 
 (after! (eshell em-term)
   (setq! eshell-visual-commands (append eshell-visual-commands '("bat" "htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini"))
@@ -362,6 +362,31 @@ current buffer's, reload dir-locals."
       :desc "Majutsu log" "J" #'majutsu-log)
 
 (map! :leader :desc "EShell popup" :n "'" #'+eshell/toggle)
-(map! :leader :prefix "o" :desc "Telega" :n "T" telega-prefix-map)
 
-(setq! telega-directory (expand-file-name "telega" (getenv "XDG_STATE_HOME")))
+(after! telega
+  (map! :leader :prefix "o" :desc "Telega" :n "T" telega-prefix-map)
+
+  (setq! telega-directory (expand-file-name "telega" (getenv "XDG_STATE_HOME"))))
+
+(use-package! ghostel
+  :commands ghostel
+  :config
+
+  ;; Shell to use (defaults to $SHELL)
+  ;; (setq ghostel-shell "/bin/zsh")
+
+  ;; Scrollback lines (default 10000)
+  ;; (setq ghostel-max-scrollback 10000)
+
+  ;; Kill the buffer when the shell exits (default t)
+  ;; (setq ghostel-kill-buffer-on-exit t)
+
+  ;; Auto-download the native module without prompting
+  (setq ghostel-module-auto-install 'download))
+
+(map! :leader
+      :desc "Terminal (ghostel)" "o t" #'ghostel
+      :desc "Terminal here"      "o T" (cmd! (let ((default-directory
+                                                    (or (doom-project-root)
+                                                        default-directory)))
+                                               (ghostel))))
