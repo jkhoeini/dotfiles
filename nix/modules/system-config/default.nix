@@ -8,7 +8,6 @@
 {
   imports = [
     ./packages.nix
-    ./aliases.nix
     ./path.nix
     ./env.nix
   ];
