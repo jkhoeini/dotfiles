@@ -9,6 +9,8 @@ uv = "latest"
 "pipx:jiratui" = { version = "latest", uvx = true, uvx_args = "--python 3.13" }
 lua = "latest"
 deno = "latest"
+"github:anyproto/anytype-agent-runtime" = "latest"
+bun = "1.3.10"
 
 [settings]
 idiomatic_version_file_enable_tools = []
