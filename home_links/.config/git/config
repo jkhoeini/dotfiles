@@ -61,4 +61,8 @@
 [safe]
 	directory = *
 [maintenance]
-	repo = /Users/mohammadk/Dev/services-pilot
+	repo = /Users/mohammadk/src/services-pilot/master
+[push]
+	default = simple
+[scalar]
+	repo = /Users/mohammadk/src/services-pilot/master
