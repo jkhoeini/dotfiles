@@ -249,8 +249,10 @@ current buffer's, reload dir-locals."
   (setq! eshell-visual-commands (append eshell-visual-commands '("bat" "htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini"))
          ;; eshell-visual-subcommands (append eshell-visual-subcommands '(("git" "log" "diff" "show")))
          ;; eshell-visual-options (append eshell-visual-options '(("git" "--help" "--paginate")))
-         eshell-destroy-buffer-when-process-dies nil
-         eshell-visual-command-function #'eshell-vterm-visual-command)
+         eshell-destroy-buffer-when-process-dies nil)
+
+  (require 'ghostel-eshell)
+  (ghostel-eshell-visual-command-mode +1)
 
   (add-hook 'eshell-mode-hook (cmd! (eldoc-mode -1)))
 
@@ -372,17 +374,20 @@ current buffer's, reload dir-locals."
   :commands ghostel
   :config
 
-  ;; Shell to use (defaults to $SHELL)
-  ;; (setq ghostel-shell "/bin/zsh")
+  (setq ghostel-module-auto-install 'download)
 
-  ;; Scrollback lines (default 10000)
-  ;; (setq ghostel-max-scrollback 10000)
+  (defadvice! my/ghostel-per-workspace-a (&rest args)
+    :around #'ghostel
+    (let ((ghostel-buffer-name
+           (if (bound-and-true-p persp-mode)
+               (format "*ghostel:%s*" (+workspace-current-name))
+             ghostel-buffer-name)))
+      (apply args)))
 
-  ;; Kill the buffer when the shell exits (default t)
-  ;; (setq ghostel-kill-buffer-on-exit t)
-
-  ;; Auto-download the native module without prompting
-  (setq ghostel-module-auto-install 'download))
+  (add-hook 'ghostel-mode-hook
+            (lambda ()
+              (when (bound-and-true-p persp-mode)
+                (persp-add-buffer (current-buffer))))))
 
 (map! :leader
       :desc "Terminal (ghostel)" "o t" #'ghostel
