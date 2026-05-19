@@ -32,7 +32,7 @@ macos ()
   fi
 
   echo "Linking dotfiles"
-  stow -t "$HOME" home_links
+  stow -R -t "$HOME" home_links
 
   echo "Applying nix configs"
   sudo nix --extra-experimental-features "nix-command flakes" run nix-darwin -- switch --flake './nix#default'
