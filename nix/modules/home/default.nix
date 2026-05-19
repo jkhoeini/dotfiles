@@ -3,6 +3,8 @@
   home-manager.backupFileExtension = "hm-backup";
 
   home-manager.users.${username} = {
+    imports = [ ./zsh.nix ];
+
     home.username = username;
     home.homeDirectory = /Users/${username};
     home.stateVersion = "24.05";

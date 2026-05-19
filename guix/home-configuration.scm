@@ -64,14 +64,16 @@
                     home-zsh-service-type
                     (home-zsh-extension
                      (zprofile (list (local-file "../home_links/.zprofile" "zprofile")))
-                     (zshrc (list (local-file "../home_links/.zshrc" "zshrc")))
+                     (zshrc (list (plain-file "source-rc"
+                                  "source ${XDG_CONFIG_HOME:-$HOME/.config}/zsh/rc.zsh\n")))
                      (environment-variables '())))
     (service home-batsignal-service-type
              (home-batsignal-configuration))
     (service home-xdg-configuration-files-service-type
-             (my-config-symlink* "antidote/plugins.txt" 
-                                 "doom/config.el" 
-                                 "doom/init.el" 
+             (my-config-symlink* "antidote/plugins.txt"
+                                 "zsh/rc.zsh"
+                                 "doom/config.el"
+                                 "doom/init.el"
                                  "doom/packages.el"))) 
    
    %base-home-services)))
