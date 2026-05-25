@@ -55,6 +55,6 @@
     yabai
     yt-dlp
     zed-editor
-    inputs.hammerspoon.packages.${system}.default
+    inputs.cosmichammer.packages.${system}.default
   ];
 }
