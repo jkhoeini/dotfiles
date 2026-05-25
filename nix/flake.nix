@@ -10,7 +10,7 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    hammerspoon.url = "github:jkhoeini/hammerspoon/dev";
+    hammerspoon.url = "github:jkhoeini/cosmichammer/dev";
     hammerspoon.inputs.nixpkgs.follows = "nixpkgs";
   };
 
