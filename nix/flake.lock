@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779802737,
-        "narHash": "sha256-Xn0ffpvZAPqbxah+4DoGbfijdOXZdxicaAr1I8VfvXU=",
+        "lastModified": 1779868362,
+        "narHash": "sha256-Q/36TBGy64jAE56bn84IU4M/ERjwz8IWODzxoJdGQQ8=",
         "owner": "jkhoeini",
         "repo": "cosmichammer",
-        "rev": "badc91955455068bf6f6690d751bdde92ed6482d",
+        "rev": "39a7678ddb668bd1dc1e005d13a01ca47159631c",
         "type": "github"
       },
       "original": {
