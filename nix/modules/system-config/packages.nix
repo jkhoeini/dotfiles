@@ -1,4 +1,9 @@
-{ pkgs, inputs, system, ... }:
+{
+  pkgs,
+  inputs,
+  system,
+  ...
+}:
 {
   environment.systemPackages = with pkgs; [
     babashka
@@ -35,7 +40,6 @@
     jujutsu
     kanata
     lazygit
-    logseq
     luarocks
     mise
     neovim
@@ -56,5 +60,6 @@
     yt-dlp
     zed-editor
     inputs.cosmichammer.packages.${system}.default
+    (inputs.docgarden.lib.mkDocGarden pkgs)
   ];
 }

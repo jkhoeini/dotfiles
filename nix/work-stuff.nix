@@ -1,5 +1,7 @@
 { username, ... }:
 {
+  environment.variables.CC_NO_SESSION_EXPORT = "1";
+
   home-manager.users.${username}.programs.zsh.shellAliases = {
     oc = "GOOGLE_CLOUD_PROJECT=spotify-claude-code-trial VERTEX_LOCATION=europe-west1 opencode";
   };

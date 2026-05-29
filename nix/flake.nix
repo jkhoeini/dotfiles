@@ -12,6 +12,9 @@
 
     cosmichammer.url = "github:jkhoeini/cosmichammer/dev";
     cosmichammer.inputs.nixpkgs.follows = "nixpkgs";
+
+    docgarden.url = "git+ssh://git@github.com/jkhoeini/DocGarden?ref=main";
+    docgarden.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -20,6 +23,7 @@
       nix-darwin,
       home-manager,
       cosmichammer,
+      docgarden,
       ...
     }:
     let

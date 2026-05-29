@@ -80,6 +80,8 @@
     "hiddenbar"
     # Free and open-source painting and sketching program
     "krita"
+    # Privacy-first knowledge base
+    "logseq"
     # Discover, download, and run local LLMs
     "lm-studio"
     # Simple Gtk# Paint Program
