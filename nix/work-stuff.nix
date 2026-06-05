@@ -1,10 +1,6 @@
-{ username, ... }:
+{ ... }:
 {
   environment.variables.CC_NO_SESSION_EXPORT = "1";
-
-  home-manager.users.${username}.programs.zsh.shellAliases = {
-    oc = "GOOGLE_CLOUD_PROJECT=spotify-claude-code-trial VERTEX_LOCATION=europe-west1 opencode";
-  };
 
   homebrew.brews = [
     # User-friendly launcher for Bazel
@@ -24,24 +20,25 @@
     "sbt"
     # JVM-based programming language
     "scala"
-    # FlyteCtl is a command line tool to interact with a Flyte cluster.
-    "flyteorg/tap/flytectl"
-    # Swift handover for remote mobs using git. mob is a CLI tool written in GO. It keeps your master branch clean and creates WIP commits on mob-session branch.
-    "remotemobprogramming/brew/mob"
     # Scala API for Apache Beam and Google Cloud Dataflow
     "spotify/public/scio"
+    # Decibel CLI and admin CLI launcher
     "spotify/sptaps/decibel-cli"
-    # Hades CLI utility
-    "spotify/sptaps/hades-cli"
+    # Kubernetes site plugin
     "spotify/sptaps/kubectl-site"
+    # Spotify wrapper for grpcurl
     {
       name = "spotify/sptaps/spgrpcurl";
       args = [ "HEAD" ];
     }
     # Spotify CLI - Internal task runner tool
     "spotify/sptaps/sptcli"
+    # Spotify Styx CLI
     "spotify/sptaps/styx-cli"
-    # A language server for Starlark, the configuration language used by Bazel and Buck2.
-    "withered-magic/brew/starpls"
+  ];
+
+  homebrew.casks = [
+    # Remote pair programming app
+    "tuple"
   ];
 }

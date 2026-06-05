@@ -45,7 +45,7 @@
     neovim
     nil
     nixd
-    nixfmt-rfc-style
+    nixfmt
     obsidian
     procs
     qmk

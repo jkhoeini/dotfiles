@@ -63,7 +63,8 @@
     (simple-service 'my-zsh-setup
                     home-zsh-service-type
                     (home-zsh-extension
-                     (zprofile (list (local-file "../home_links/.zprofile" "zprofile")))
+                     (zprofile (list (plain-file "zprofile"
+                                                  "export LANG=\"en_US.UTF-8\"\nexport LC_ALL=\"en_US.UTF-8\"\nexport LC_CTYPE=\"en_US.UTF-8\"\n\n# Start ssh-agent if not already running\nif ! pgrep -q ssh-agent; then\n  eval \"$(ssh-agent -s)\"\nfi\n")))
                      (zshrc (list (plain-file "source-rc"
                                   "source ${XDG_CONFIG_HOME:-$HOME/.config}/zsh/rc.zsh\n")))
                      (environment-variables '())))

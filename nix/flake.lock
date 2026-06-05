@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780072858,
-        "narHash": "sha256-orp0JN75DwWQiqcqf6g1FKP9b7bF5mq6v8nf0Ho6tVs=",
+        "lastModified": 1780605789,
+        "narHash": "sha256-YHhWOtCEf1pkiOypPd/qN6NWUu7DR/vid4IOud9W/V8=",
         "owner": "jkhoeini",
         "repo": "cosmichammer",
-        "rev": "58972f664c9a146b3d08182644bee93f4cdc7eff",
+        "rev": "85deb82d5172d25465d1b5945f2f3a523728397f",
         "type": "github"
       },
       "original": {
@@ -28,11 +28,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780167364,
-        "narHash": "sha256-Wd9VPSwQKvdBys0VetQ9kdFe0jTYOyKHLjFYdsKNI4s=",
+        "lastModified": 1780672985,
+        "narHash": "sha256-SS54eTxFLYuyJLUZtKydjBDI/43zMvN3VTdzJQIil3A=",
         "ref": "main",
-        "rev": "3a07e919ac00ca49157130f87be112b93eebca3c",
-        "revCount": 9,
+        "rev": "96f54a348e234e8d286d9518e90e0e331b826b73",
+        "revCount": 34,
         "type": "git",
         "url": "ssh://git@github.com/jkhoeini/DocGarden"
       },
@@ -49,11 +49,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780099287,
-        "narHash": "sha256-efIPwVGtIWIjWcznhaop6XN6HxnOL8800hF6CBNvlqQ=",
+        "lastModified": 1780593650,
+        "narHash": "sha256-CHo7k65YTL3HY+WQVedDTupji+LMgNlKCdrtRHZFAK4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "7d8127d308c3fb9664f7e643eec944be74ebb37d",
+        "rev": "447fd9ff62501dae7206dfe180ee89f8de27b7d5",
         "type": "github"
       },
       "original": {
@@ -84,11 +84,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1780030872,
-        "narHash": "sha256-u6WU/yd/o8iYQrHX3RAwO1hYa3LkoSL+WNQD0rJfJZQ=",
+        "lastModified": 1780365719,
+        "narHash": "sha256-QfWfccTN+70ZQ4m2qlU9PiKfz2Yppq94058iJyARNwc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e9a7635a57597d9754eccebdfc7045e6c8600e6b",
+        "rev": "ffa10e26ae11d676b2db836259889f1f571cb14f",
         "type": "github"
       },
       "original": {
