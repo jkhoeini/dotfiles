@@ -1,8 +1,9 @@
-{ ... }:
+{ username, ... }:
 {
   homebrew.enable = true;
   homebrew.global.brewfile = true;
   homebrew.onActivation.cleanup = "none"; # "none", "uninstall", "zap"
+  homebrew.onActivation.extraEnv.XDG_CONFIG_HOME = "/Users/${username}/.config";
 
   homebrew.masApps = { };
 
