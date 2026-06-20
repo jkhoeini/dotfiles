@@ -41,7 +41,6 @@
     kanata
     lazygit
     luarocks
-    mise
     neovim
     nil
     nixd
@@ -58,7 +57,6 @@
     vim
     yabai
     yt-dlp
-    zed-editor
     inputs.cosmichammer.packages.${system}.default
     (inputs.docgarden.lib.mkDocGarden pkgs)
   ];

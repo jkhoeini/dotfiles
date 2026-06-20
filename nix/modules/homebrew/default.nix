@@ -22,6 +22,8 @@
     "git"
     # GNU Privacy Guard (OpenPGP)
     "gnupg"
+    # Runtime and tool version manager
+    "mise"
     # AI coding agent, built for the terminal
     "opencode"
     # Create, run, and share large language models (LLMs)
@@ -65,7 +67,7 @@
     # Private desktop AI chat application
     "anythingllm"
     # Chromium based browser
-    "arc"
+    # "arc"
     # Web browser focusing on privacy
     "brave-browser"
     # Open-source browser prompter
@@ -136,5 +138,7 @@
     "virtualbuddy"
     # Open-source code editor
     "visual-studio-code"
+    # Fast collaborative code editor
+    "zed"
   ];
 }
