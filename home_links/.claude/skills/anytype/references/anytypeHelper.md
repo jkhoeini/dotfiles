@@ -1,0 +1,1 @@
+/Users/mohammadk/src/anytype-agents-skill/anytypeHelper.md
