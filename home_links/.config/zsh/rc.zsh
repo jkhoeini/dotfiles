@@ -6,6 +6,11 @@ if $RUN_ZPROF; then
     zmodload zsh/zprof
 fi
 
+# Keep $PATH free of duplicates. PATH entries are provided by nix-darwin
+# (environment.systemPath, via /etc/zshenv) as well as the brew/mise/bun
+# activations below, so without this the interactive PATH accumulates dupes.
+typeset -U path PATH
+
 # Set PATH, MANPATH, etc., for Homebrew.
 if [[ -e /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -47,7 +52,7 @@ fi
 # Lines configured by zsh-newuser-install
 SAVEHIST=10000
 setopt appendhistory autocd beep extendedglob
-bindkey -v
+[[ -o interactive ]] && bindkey -v
 # End of lines configured by zsh-newuser-install
 
 # Good options
@@ -69,9 +74,11 @@ zstyle ':completion:*:warnings' format "$fg[red]No matches for:$reset_color %d"
 zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
 zstyle ':completion:*' group-name ''
 
-command -v brew 2>&1 >/dev/null && source "$(brew --prefix)/share/antidote/antidote.zsh"
-[[ -e '/usr/share/zsh-antidote/antidote.zsh' ]] && source '/usr/share/zsh-antidote/antidote.zsh'
-antidote load ~/.config/antidote/plugins.txt
+if [[ -o interactive && -t 1 ]]; then
+    command -v brew 2>&1 >/dev/null && source "$(brew --prefix)/share/antidote/antidote.zsh"
+    [[ -e '/usr/share/zsh-antidote/antidote.zsh' ]] && source '/usr/share/zsh-antidote/antidote.zsh'
+    antidote load ~/.config/antidote/plugins.txt
+fi
 
 alias -g ...='../..'
 alias -g ....='../../..'
@@ -79,16 +86,20 @@ alias -g .....='../../../..'
 alias -g L='| less -R'
 alias -g G='| grep -i'
 
-autoload -U promptinit; promptinit
-prompt pure
+if [[ -o interactive ]]; then
+    autoload -U promptinit; promptinit
+    prompt pure
+fi
 
 if [[ -e  "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ]]; then
     source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 fi
 
-bindkey '^T' fzf-file-widget
-bindkey '^R' fzf-history-widget
-bindkey '^K' per-directory-history-toggle-history
+if [[ -o interactive ]]; then
+    bindkey '^T' fzf-file-widget
+    bindkey '^R' fzf-history-widget
+    bindkey '^K' per-directory-history-toggle-history
+fi
 
 eval "$(mise activate zsh)"
 
