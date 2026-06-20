@@ -3,3 +3,7 @@ tags
 secrets.sh
 /home_links/.local/lib/
 /home_links/.local/bin/*
+
+# Clojure tooling caches (clj-kondo / clojure-lsp)
+/.clj-kondo/.cache/
+/.lsp/.cache/
