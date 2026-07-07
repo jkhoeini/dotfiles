@@ -58,6 +58,11 @@
 (package! paren-face)
 (package! gptel :recipe (:nonrecursive t))
 (package! eca :recipe (:host github :repo "editor-code-assistant/eca-emacs" :files ("*.el")))
+(package! shell-maker)
+(package! acp)
+(package! agent-shell)
+(package! agent-shell-manager
+  :recipe (:host github :repo "jethrokuan/agent-shell-manager" :files ("*.el")))
 ;; (package! mcp)
 ;; (package! magit-gptcommit)
 ;; (package! aidermacs)

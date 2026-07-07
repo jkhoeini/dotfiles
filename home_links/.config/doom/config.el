@@ -207,6 +207,40 @@ current buffer's, reload dir-locals."
                    :stream t
                    :models '(devstral-small-2:latest magistral:latest))))
 
+(use-package! agent-shell
+  :commands (agent-shell agent-shell-toggle agent-shell-anthropic-start-claude-code)
+  :config
+  (require 'acp)
+  (require 'agent-shell)
+
+  (defun my/agent-shell-dot-subdir (subdir)
+    "Store agent-shell data outside project working trees."
+    (let* ((state-home (or (getenv "XDG_STATE_HOME")
+                           (expand-file-name "~/.local/state")))
+           (cwd (directory-file-name (expand-file-name (agent-shell-cwd))))
+           (sanitized-cwd (replace-regexp-in-string "[/:]" "-" cwd)))
+      (expand-file-name subdir
+                        (expand-file-name sanitized-cwd
+                                          (expand-file-name "agent-shell" state-home)))))
+
+  (setq agent-shell-preferred-agent-config 'claude-code
+        agent-shell-anthropic-claude-acp-command '("claude-agent-acp")
+        agent-shell-anthropic-claude-environment
+        (agent-shell-make-environment-variables :inherit-env t)
+        agent-shell-dot-subdir-function #'my/agent-shell-dot-subdir))
+
+(use-package! agent-shell-manager
+  :after agent-shell
+  :commands agent-shell-manager-toggle
+  :config
+  (require 'agent-shell-manager))
+
+(map! :leader
+      :prefix "o"
+      :desc "Agent Shell" "a" #'agent-shell
+      :desc "Claude Code Agent" "A" #'agent-shell-anthropic-start-claude-code
+      :desc "Agent Shell Manager" "m" #'agent-shell-manager-toggle)
+
 ;; (use-package! magit-gptcommit
 ;;   :config
 ;;   (require 'llm-ollama)
