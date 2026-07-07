@@ -61,8 +61,6 @@
 (package! shell-maker)
 (package! acp)
 (package! agent-shell)
-(package! agent-shell-manager
-  :recipe (:host github :repo "jethrokuan/agent-shell-manager" :files ("*.el")))
 ;; (package! mcp)
 ;; (package! magit-gptcommit)
 ;; (package! aidermacs)

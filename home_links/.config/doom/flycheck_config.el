@@ -276,6 +276,25 @@ current buffer's, reload dir-locals."
         (agent-shell-make-environment-variables :inherit-env t)
         agent-shell-dot-subdir-function #'my/agent-shell-dot-subdir))
 
+(use-package! agent-shell-manager
+  :after agent-shell
+  :commands agent-shell-manager-toggle
+  :config
+  (require 'agent-shell-manager)
+
+  (map! :map agent-shell-manager-mode-map
+        :n "RET" #'agent-shell-manager-goto
+        :n "gr"  #'agent-shell-manager-refresh
+        :n "K"   #'agent-shell-manager-kill
+        :n "c"   #'agent-shell-manager-new
+        :n "R"   #'agent-shell-manager-restart
+        :n "D"   #'agent-shell-manager-delete-killed
+        :n "m"   #'agent-shell-manager-set-mode
+        :n "M"   #'agent-shell-manager-set-model
+        :n "C-c C-c" #'agent-shell-manager-interrupt
+        :n "t"   #'agent-shell-manager-view-traffic
+        :n "l"   #'agent-shell-manager-toggle-logging
+        :n "q"   #'quit-window))
 
 
 
@@ -492,26 +511,28 @@ current buffer's, reload dir-locals."
 
 (defvar my/session--history nil)
 
-(defun my/agent-shell-switcher ()
-  "Unified agent-shell session switcher."
-  (interactive)
-  (require 'consult)
-  (unless (sqlite-available-p) (user-error "SQLite not available"))
-  (clrhash my/session--candidates)
-  (consult--multi
-   (list `(:name "Sessions" :narrow ?s :category agent-session :default t
-           :items ,(lambda () (my/session--make-items nil))
-           :annotate ,#'my/session--annotate
-           :action ,#'my/session--action
-           :new ,(lambda (_input) (agent-shell)))
-         `(:name "Archived" :narrow ?x :category agent-session :hidden t
-           :items ,(lambda () (my/session--make-items t))
-           :annotate ,#'my/session--annotate
-           :action ,#'my/session--action-unarchive))
-   :prompt "Agent session (M-RET new): "
-   :history 'my/session--history
-   :require-match nil
-   :sort nil))
+(after! consult
+  (defun my/agent-shell-switcher ()
+    "Unified agent-shell session switcher."
+    (interactive)
+    (unless (sqlite-available-p) (user-error "SQLite not available"))
+    (clrhash my/session--candidates)
+    (consult--multi
+     (list `(:name "Sessions" :narrow ?s :category agent-session :default t
+             :items ,(lambda () (my/session--make-items nil))
+             :annotate ,#'my/session--annotate
+             :action ,#'my/session--action
+             :new ,(lambda (_input) (agent-shell)))
+           `(:name "Archived" :narrow ?x :category agent-session :hidden t
+             :items ,(lambda () (my/session--make-items t))
+             :annotate ,#'my/session--annotate
+             :action ,#'my/session--action-unarchive))
+     :prompt "Agent session (M-RET new): "
+     :history 'my/session--history
+     :require-match nil
+     :sort nil))
+
+  (map! :leader :prefix "o" :desc "Agent Sessions" "a" #'my/agent-shell-switcher))
 
 (after! embark
   (defvar-keymap my/session-embark-map
@@ -529,8 +550,8 @@ current buffer's, reload dir-locals."
 
 (map! :leader
       :prefix "o"
-      :desc "Agent Sessions" "a" #'my/agent-shell-switcher
-      :desc "New Agent Shell" "A" #'agent-shell)
+      :desc "New Agent Shell" "A" #'agent-shell
+      :desc "Agent Shell Manager" "m" #'agent-shell-manager-toggle)
 
 
 
