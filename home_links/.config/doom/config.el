@@ -85,6 +85,16 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+(after! doom-modeline
+  (setq doom-modeline-persp-name t
+        doom-modeline-display-default-persp-name t))
+
+(setq frame-title-format
+      '((:eval (if (bound-and-true-p persp-mode)
+                   (format "[%s] " (+workspace-current-name))
+                 ""))
+        "%b"))
+
 (setq scroll-margin 4)
 (setq-default line-spacing 8)
 (setq calendar-date-style 'iso)
@@ -103,6 +113,39 @@
 
 (map! :n "-" #'dired-jump)
 (map! :leader :desc "Run command" :n "SPC" 'execute-extended-command)
+
+(defun my/unified-switcher ()
+  "Switch between workspace buffers and open workspaces."
+  (interactive)
+  (consult--multi
+   `((:name "Buffer"
+      :narrow ?b
+      :category buffer
+      :face consult-buffer
+      :state ,#'consult--buffer-state
+      :items ,(lambda ()
+                (let ((bufs (if (bound-and-true-p persp-mode)
+                               (persp-buffer-list)
+                             (buffer-list))))
+                  (cl-loop for b in bufs
+                           for name = (buffer-name b)
+                           unless (or (eq b (current-buffer))
+                                      (string-prefix-p " " name))
+                           collect name)))
+      :action ,(lambda (name &rest _) (switch-to-buffer name)))
+     (:name "Workspace"
+      :narrow ?w
+      :face font-lock-constant-face
+      :items ,(lambda ()
+                (when (bound-and-true-p persp-mode)
+                  (cl-remove (+workspace-current-name)
+                             (+workspace-list-names)
+                             :test #'equal)))
+      :action ,(lambda (name &rest _) (+workspace/switch-to name))))
+   :prompt "Switch: "
+   :sort nil))
+
+(map! :leader :desc "Switch buffer/workspace" "," #'my/unified-switcher)
 
 (require 'typst-ts-mode)
 (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
