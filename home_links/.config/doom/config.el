@@ -29,9 +29,9 @@
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
 (setopt doom-font (font-spec :family "JuliaMono"
-                            :size (if (eq system-type 'darwin) 13 13)
-                            :weight 'regular)
-       line-spacing 0.6)
+                             :size (if (eq system-type 'darwin) 13 13)
+                             :weight 'regular)
+        line-spacing 0.6)
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -123,8 +123,8 @@
       :state ,#'consult--buffer-state
       :items ,(lambda ()
                 (let ((bufs (if (bound-and-true-p persp-mode)
-                               (persp-buffer-list)
-                             (buffer-list))))
+                                (persp-buffer-list)
+                              (buffer-list))))
                   (cl-loop for b in bufs
                            for name = (buffer-name b)
                            unless (or (eq b (current-buffer))
@@ -143,11 +143,25 @@
                              :test #'equal)))
       :action ,(lambda (name &rest _) (+workspace/switch-to name)))))
 
+
+
 (defun my/unified-switcher ()
-  "Switch between workspace buffers and open workspaces."
+  "Switch between buffers, workspaces, and agent sessions."
   (interactive)
-  (consult-buffer (list 'my/consult-source-workspace-buffers
-                        'my/consult-source-workspaces)))
+  (require 'consult)
+  (when (and (fboundp 'sqlite-available-p) (sqlite-available-p))
+    (clrhash my/session--candidates))
+  (consult--multi
+   (append
+    (list 'my/consult-source-workspace-buffers
+          'my/consult-source-workspaces)
+    (when (and (fboundp 'sqlite-available-p) (sqlite-available-p))
+      (append (my/session--project-sources nil)
+              (my/session--project-sources t))))
+   :prompt "Switch: "
+   :history 'my/session--history
+   :require-match nil
+   :sort nil))
 
 (map! :leader :desc "Switch buffer/workspace" "," #'my/unified-switcher)
 
@@ -290,14 +304,14 @@ current buffer's, reload dir-locals."
     (setq my/session-db--connection nil))
   (unless my/session-db--connection
     (let ((db-dir (expand-file-name "agent-shell"
-                                     (or (getenv "XDG_STATE_HOME")
-                                         (expand-file-name "~/.local/state")))))
+                                    (or (getenv "XDG_STATE_HOME")
+                                        (expand-file-name "~/.local/state")))))
       (make-directory db-dir t)
       (let ((db (sqlite-open (expand-file-name "sessions.db" db-dir))))
         (sqlite-execute db "PRAGMA journal_mode=WAL")
         (sqlite-execute db "PRAGMA busy_timeout=3000")
         (sqlite-execute db
-         "CREATE TABLE IF NOT EXISTS sessions (
+                        "CREATE TABLE IF NOT EXISTS sessions (
             session_id TEXT PRIMARY KEY,
             title TEXT,
             project_dir TEXT,
@@ -311,10 +325,10 @@ current buffer's, reload dir-locals."
   "Insert or update a session, preserving created_at and title."
   (let ((now (truncate (float-time))))
     (sqlite-execute (my/session-db)
-     "INSERT INTO sessions (session_id, project_dir, created_at, updated_at)
+                    "INSERT INTO sessions (session_id, project_dir, created_at, updated_at)
       VALUES (?, ?, ?, ?)
       ON CONFLICT(session_id) DO UPDATE SET updated_at = excluded.updated_at"
-     (list session-id project-dir now now))))
+                    (list session-id project-dir now now))))
 
 (defun my/session-db-update-title (session-id title)
   "Update the title for a session, truncating and collapsing newlines."
@@ -322,22 +336,22 @@ current buffer's, reload dir-locals."
     (let ((clean (truncate-string-to-width
                   (replace-regexp-in-string "[\n\r]+" " " title) 120)))
       (sqlite-execute (my/session-db)
-       "UPDATE sessions SET title = ?, updated_at = ? WHERE session_id = ?"
-       (list clean (truncate (float-time)) session-id)))))
+                      "UPDATE sessions SET title = ?, updated_at = ? WHERE session_id = ?"
+                      (list clean (truncate (float-time)) session-id)))))
 
 (defun my/session-db-toggle-archive (session-id)
   "Toggle the archived flag for a session."
   (sqlite-execute (my/session-db)
-   "UPDATE sessions SET archived = 1 - archived WHERE session_id = ?"
-   (list session-id)))
+                  "UPDATE sessions SET archived = 1 - archived WHERE session_id = ?"
+                  (list session-id)))
 
 (defun my/session-db-query (&optional include-archived)
   "Query sessions ordered by recency."
   (sqlite-select (my/session-db)
-   (if include-archived
-       "SELECT session_id, title, project_dir, archived, updated_at
+                 (if include-archived
+                     "SELECT session_id, title, project_dir, archived, updated_at
         FROM sessions ORDER BY updated_at DESC"
-     "SELECT session_id, title, project_dir, archived, updated_at
+                   "SELECT session_id, title, project_dir, archived, updated_at
       FROM sessions WHERE archived = 0 ORDER BY updated_at DESC")))
 
 (defun my/session-tracker-setup ()
@@ -373,8 +387,8 @@ current buffer's, reload dir-locals."
                                        (map-nested-elt agent-shell--state '(:session :id))))))
                      (let ((now (truncate (float-time))))
                        (sqlite-execute (my/session-db)
-                        "UPDATE sessions SET updated_at = ? WHERE session_id = ?"
-                        (list now id)))))))))
+                                       "UPDATE sessions SET updated_at = ? WHERE session_id = ?"
+                                       (list now id)))))))))
 
 (add-hook 'agent-shell-mode-hook #'my/session-tracker-setup)
 
@@ -418,13 +432,20 @@ current buffer's, reload dir-locals."
 (defvar my/session--candidates (make-hash-table :test #'equal)
   "Map candidate string -> session plist, rebuilt per invocation.")
 
-(defun my/session--make-items (archived-p)
-  "Build consult candidates from SQLite. ARCHIVED-P selects archive status."
+(defun my/session--make-items (archived-p &optional project-dir)
+  "Build consult candidates from SQLite.
+ARCHIVED-P selects archive status. PROJECT-DIR limits to one project."
   (let ((live (my/session-live-buffers))
         (rows (sqlite-select (my/session-db)
-               "SELECT session_id, title, project_dir, updated_at
-                FROM sessions WHERE archived = ? ORDER BY updated_at DESC"
-               (list (if archived-p 1 0)))))
+                             (if project-dir
+                                 "SELECT session_id, title, project_dir, updated_at
+                    FROM sessions WHERE archived = ? AND project_dir = ?
+                    ORDER BY updated_at DESC"
+                               "SELECT session_id, title, project_dir, updated_at
+                  FROM sessions WHERE archived = ? ORDER BY updated_at DESC")
+                             (if project-dir
+                                 (list (if archived-p 1 0) project-dir)
+                               (list (if archived-p 1 0))))))
     (cl-loop for row in rows
              for idx from 0
              for id = (nth 0 row)
@@ -439,6 +460,34 @@ current buffer's, reload dir-locals."
                                    :live-p (and live-buf t))
                         my/session--candidates)
                cand))))
+
+(defun my/session--project-sources (archived-p)
+  "Generate one consult source per project from SQLite.
+ARCHIVED-P selects archive status."
+  (let* ((archive-flag (if archived-p 1 0))
+         (projects (sqlite-select (my/session-db)
+                                  "SELECT project_dir, MAX(updated_at) as latest
+                     FROM sessions WHERE archived = ? AND project_dir != ''
+                     GROUP BY project_dir ORDER BY latest DESC"
+                                  (list archive-flag))))
+    (cl-loop for row in projects
+             for first = t then nil
+             for dir = (nth 0 row)
+             for project = (file-name-nondirectory (directory-file-name dir))
+             collect
+             `(:name ,(format "%s: %s" (if archived-p "Archived" "Sessions") project)
+               :narrow ,(if archived-p ?x ?a)
+               :category agent-session
+               ,@(when first (unless archived-p '(:default t)))
+               ,@(when archived-p '(:hidden t))
+               :items ,(let ((d dir) (ap archived-p))
+                         (lambda () (my/session--make-items ap d)))
+               :annotate ,#'my/session--annotate
+               :action ,(if archived-p
+                            #'my/session--action-unarchive
+                          #'my/session--action)
+               ,@(unless archived-p
+                   `(:new ,(lambda (_input) (agent-shell))))))))
 
 (defun my/session--annotate (cand)
   "Annotate a session candidate with project, age, and live status."
@@ -493,21 +542,14 @@ current buffer's, reload dir-locals."
 (defvar my/session--history nil)
 
 (defun my/agent-shell-switcher ()
-  "Unified agent-shell session switcher."
+  "Agent-shell session switcher. Also available via `SPC ,' narrowed to `a'."
   (interactive)
   (require 'consult)
   (unless (sqlite-available-p) (user-error "SQLite not available"))
   (clrhash my/session--candidates)
   (consult--multi
-   (list `(:name "Sessions" :narrow ?s :category agent-session :default t
-           :items ,(lambda () (my/session--make-items nil))
-           :annotate ,#'my/session--annotate
-           :action ,#'my/session--action
-           :new ,(lambda (_input) (agent-shell)))
-         `(:name "Archived" :narrow ?x :category agent-session :hidden t
-           :items ,(lambda () (my/session--make-items t))
-           :annotate ,#'my/session--annotate
-           :action ,#'my/session--action-unarchive))
+   (append (my/session--project-sources nil)
+           (my/session--project-sources t))
    :prompt "Agent session (M-RET new): "
    :history 'my/session--history
    :require-match nil
@@ -526,12 +568,6 @@ current buffer's, reload dir-locals."
               (id (plist-get data :id)))
     (my/session-db-toggle-archive id)
     (message "Toggled archive: %s" (truncate-string-to-width cand 40))))
-
-(map! :leader
-      :prefix "o"
-      :desc "Agent Sessions" "a" #'my/agent-shell-switcher
-      :desc "New Agent Shell" "A" #'agent-shell)
-
 
 
 ;; (use-package! magit-gptcommit
@@ -553,8 +589,8 @@ current buffer's, reload dir-locals."
 
 (after! org
   (setopt org-todo-keywords
-         '((sequence "NOW(n)" "NEXT(x)" "LATER(l)" "PROJ(p)" "|" "DONE(d)" "CANCEL(c)")
-           (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")))
+          '((sequence "NOW(n)" "NEXT(x)" "LATER(l)" "PROJ(p)" "|" "DONE(d)" "CANCEL(c)")
+            (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")))
 
   ;; Count all descendant TODOs, not just direct children
   (setopt org-hierarchical-todo-statistics nil)
@@ -574,9 +610,9 @@ current buffer's, reload dir-locals."
 
 (after! (eshell em-term)
   (setopt eshell-visual-commands (append eshell-visual-commands '("bat" "htop" "top" "vim" "nvim" "less" "man" "tmux" "watch" "gemini"))
-         ;; eshell-visual-subcommands (append eshell-visual-subcommands '(("git" "log" "diff" "show")))
-         ;; eshell-visual-options (append eshell-visual-options '(("git" "--help" "--paginate")))
-         eshell-destroy-buffer-when-process-dies nil)
+          ;; eshell-visual-subcommands (append eshell-visual-subcommands '(("git" "log" "diff" "show")))
+          ;; eshell-visual-options (append eshell-visual-options '(("git" "--help" "--paginate")))
+          eshell-destroy-buffer-when-process-dies nil)
 
   (require 'ghostel-eshell)
   (ghostel-eshell-visual-command-mode +1)
