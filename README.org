@@ -67,6 +67,18 @@ dotfiles/
 7. Add second darwin config for personal MacBook
 8. Drop stow dependency
 
+
+* TODO emacs agent-shell
+- [ ] preview of session
+- [ ] store session transcript in sqlite
+- [ ] backup of sqlite
+- [ ] full-text search of transcripts and RAG
+- [ ] agent buffer in the list of buffer
+- [ ] bookmark projects / sessions / buffers
+- [ ] package for melpa
+- [ ] deep link to sessions or even turns in org-files
+- [ ] use embark actions for new session, bookmark, etc
+- [ ] select what harness (opencode, cursor, codex) when creating new session. the db should store what harness was this session from
 * TODO backups
 ** zplug packages
 

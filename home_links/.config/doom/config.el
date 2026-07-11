@@ -143,23 +143,21 @@
                              :test #'equal)))
       :action ,(lambda (name &rest _) (+workspace/switch-to name)))))
 
-
-
 (defun my/unified-switcher ()
   "Switch between buffers, workspaces, and agent sessions."
   (interactive)
   (require 'consult)
-  (when (and (fboundp 'sqlite-available-p) (sqlite-available-p))
-    (clrhash my/session--candidates))
+  (when (fboundp 'agent-shell-sessions-consult--candidates)
+    (clrhash agent-shell-sessions-consult--candidates))
   (consult--multi
    (append
     (list 'my/consult-source-workspace-buffers
           'my/consult-source-workspaces)
-    (when (and (fboundp 'sqlite-available-p) (sqlite-available-p))
-      (append (my/session--project-sources nil)
-              (my/session--project-sources t))))
+    (when (and (fboundp 'sqlite-available-p) (sqlite-available-p)
+               (fboundp 'agent-shell-sessions-consult-sources))
+      (append (agent-shell-sessions-consult-sources nil)
+              (agent-shell-sessions-consult-sources t))))
    :prompt "Switch: "
-   :history 'my/session--history
    :require-match nil
    :sort nil))
 
@@ -289,285 +287,25 @@ current buffer's, reload dir-locals."
         agent-shell-anthropic-claude-environment
         (agent-shell-make-environment-variables :inherit-env t)
         agent-shell-dot-subdir-function #'my/agent-shell-dot-subdir))
+(use-package! agent-shell-sessions
+  :after agent-shell
+  :config
+  (agent-shell-sessions-mode-setup)
+  (setq agent-shell-sessions-switch-to-project-function
+        #'my/agent-shell-sessions-workspace-switch))
 
+(defun my/agent-shell-sessions-workspace-switch (project-dir buffer)
+  "Switch to the workspace for PROJECT-DIR, adding BUFFER if provided."
+  (when (and project-dir (file-directory-p project-dir))
+    (let ((ws-name (file-name-nondirectory (directory-file-name project-dir))))
+      (+workspace-switch ws-name t)
+      (when buffer (persp-add-buffer buffer)))))
 
+(use-package! agent-shell-sessions-consult
+  :after (agent-shell-sessions consult))
 
-
-;; ==== Session Tracker (SQLite) ====
-
-(defvar my/session-db--connection nil)
-
-(defun my/session-db ()
-  "Open or return the session database connection."
-  (when (and my/session-db--connection
-             (not (sqlitep my/session-db--connection)))
-    (setq my/session-db--connection nil))
-  (unless my/session-db--connection
-    (let ((db-dir (expand-file-name "agent-shell"
-                                    (or (getenv "XDG_STATE_HOME")
-                                        (expand-file-name "~/.local/state")))))
-      (make-directory db-dir t)
-      (let ((db (sqlite-open (expand-file-name "sessions.db" db-dir))))
-        (sqlite-execute db "PRAGMA journal_mode=WAL")
-        (sqlite-execute db "PRAGMA busy_timeout=3000")
-        (sqlite-execute db
-                        "CREATE TABLE IF NOT EXISTS sessions (
-            session_id TEXT PRIMARY KEY,
-            title TEXT,
-            project_dir TEXT,
-            archived INTEGER DEFAULT 0,
-            created_at INTEGER,
-            updated_at INTEGER)")
-        (setq my/session-db--connection db))))
-  my/session-db--connection)
-
-(defun my/session-db-upsert (session-id project-dir)
-  "Insert or update a session, preserving created_at and title."
-  (let ((now (truncate (float-time))))
-    (sqlite-execute (my/session-db)
-                    "INSERT INTO sessions (session_id, project_dir, created_at, updated_at)
-      VALUES (?, ?, ?, ?)
-      ON CONFLICT(session_id) DO UPDATE SET updated_at = excluded.updated_at"
-                    (list session-id project-dir now now))))
-
-(defun my/session-db-update-title (session-id title)
-  "Update the title for a session, truncating and collapsing newlines."
-  (when (and session-id (stringp title) (not (string-empty-p title)))
-    (let ((clean (truncate-string-to-width
-                  (replace-regexp-in-string "[\n\r]+" " " title) 120)))
-      (sqlite-execute (my/session-db)
-                      "UPDATE sessions SET title = ?, updated_at = ? WHERE session_id = ?"
-                      (list clean (truncate (float-time)) session-id)))))
-
-(defun my/session-db-toggle-archive (session-id)
-  "Toggle the archived flag for a session."
-  (sqlite-execute (my/session-db)
-                  "UPDATE sessions SET archived = 1 - archived WHERE session_id = ?"
-                  (list session-id)))
-
-(defun my/session-db-query (&optional include-archived)
-  "Query sessions ordered by recency."
-  (sqlite-select (my/session-db)
-                 (if include-archived
-                     "SELECT session_id, title, project_dir, archived, updated_at
-        FROM sessions ORDER BY updated_at DESC"
-                   "SELECT session_id, title, project_dir, archived, updated_at
-      FROM sessions WHERE archived = 0 ORDER BY updated_at DESC")))
-
-(defun my/session-tracker-setup ()
-  "Subscribe to agent-shell events for session tracking."
-  (when (sqlite-available-p)
-    (let ((buf (current-buffer)))
-      (agent-shell-subscribe-to
-       :shell-buffer buf
-       :event 'init-finished
-       :on-event (lambda (_event)
-                   (when-let* ((id (with-current-buffer buf
-                                     (when (boundp 'agent-shell--state)
-                                       (map-nested-elt agent-shell--state '(:session :id))))))
-                     (my/session-db-upsert id (buffer-local-value 'default-directory buf)))))
-      (agent-shell-subscribe-to
-       :shell-buffer buf
-       :event 'session-title-changed
-       :on-event (lambda (event)
-                   (when-let* ((id (with-current-buffer buf
-                                     (when (boundp 'agent-shell--state)
-                                       (map-nested-elt agent-shell--state '(:session :id)))))
-                               (title (map-nested-elt event '(:data :title))))
-                     (my/session-db-update-title id title)
-                     (with-current-buffer buf
-                       (rename-buffer (format "*%s*" title) t)
-                       (setq-local shell-maker--buffer-name-override (buffer-name))))))
-      (agent-shell-subscribe-to
-       :shell-buffer buf
-       :event 'turn-complete
-       :on-event (lambda (_event)
-                   (when-let* ((id (with-current-buffer buf
-                                     (when (boundp 'agent-shell--state)
-                                       (map-nested-elt agent-shell--state '(:session :id))))))
-                     (let ((now (truncate (float-time))))
-                       (sqlite-execute (my/session-db)
-                                       "UPDATE sessions SET updated_at = ? WHERE session_id = ?"
-                                       (list now id)))))))))
-
-(add-hook 'agent-shell-mode-hook #'my/session-tracker-setup)
-
-(defun my/session-live-buffers ()
-  "Return alist of (session-id . buffer) for live agent-shell buffers."
-  (cl-loop for buf in (if (fboundp 'agent-shell-buffers) (agent-shell-buffers) nil)
-           when (buffer-live-p buf)
-           for id = (with-current-buffer buf
-                      (when (boundp 'agent-shell--state)
-                        (map-nested-elt agent-shell--state '(:session :id))))
-           when id collect (cons id buf)))
-
-(defun my/relative-time (unix-time)
-  "Format UNIX-TIME as a relative time string."
-  (if (or (null unix-time) (= unix-time 0)) ""
-    (let ((diff (- (truncate (float-time)) unix-time)))
-      (cond
-       ((< diff 60) "now")
-       ((< diff 3600) (format "%dm ago" (/ diff 60)))
-       ((< diff 86400) (format "%dh ago" (/ diff 3600)))
-       ((< diff 2592000) (format "%dd ago" (/ diff 86400)))
-       (t (format-time-string "%b %d" (seconds-to-time unix-time)))))))
-
-(defun my/session-find-live-buffer (session-id)
-  "Find a live agent-shell buffer with SESSION-ID."
-  (cl-find-if
-   (lambda (buf)
-     (with-current-buffer buf
-       (and (boundp 'agent-shell--state)
-            (equal (map-nested-elt agent-shell--state '(:session :id))
-                   session-id))))
-   (if (fboundp 'agent-shell-buffers) (agent-shell-buffers) nil)))
-
-(defun my/session--workspace-of (buf)
-  "Return the workspace name containing BUF, or nil."
-  (when (bound-and-true-p persp-mode)
-    (cl-loop for persp in (+workspace-list)
-             when (persp-contain-buffer-p buf persp)
-             return (safe-persp-name persp))))
-
-(defvar my/session--candidates (make-hash-table :test #'equal)
-  "Map candidate string -> session plist, rebuilt per invocation.")
-
-(defun my/session--make-items (archived-p &optional project-dir)
-  "Build consult candidates from SQLite.
-ARCHIVED-P selects archive status. PROJECT-DIR limits to one project."
-  (let ((live (my/session-live-buffers))
-        (rows (sqlite-select (my/session-db)
-                             (if project-dir
-                                 "SELECT session_id, title, project_dir, updated_at
-                    FROM sessions WHERE archived = ? AND project_dir = ?
-                    ORDER BY updated_at DESC"
-                               "SELECT session_id, title, project_dir, updated_at
-                  FROM sessions WHERE archived = ? ORDER BY updated_at DESC")
-                             (if project-dir
-                                 (list (if archived-p 1 0) project-dir)
-                               (list (if archived-p 1 0))))))
-    (cl-loop for row in rows
-             for idx from 0
-             for id = (nth 0 row)
-             for title = (or (nth 1 row) "Untitled")
-             for dir = (or (nth 2 row) "")
-             for updated = (nth 3 row)
-             collect
-             (let* ((live-buf (cdr (assoc id live)))
-                    (cand (concat (truncate-string-to-width title 50 nil ?\s)
-                                  (consult--tofu-encode idx))))
-               (puthash cand (list :id id :dir dir :updated updated
-                                   :live-p (and live-buf t))
-                        my/session--candidates)
-               cand))))
-
-(defun my/session--project-sources (archived-p)
-  "Generate one consult source per project from SQLite.
-ARCHIVED-P selects archive status."
-  (let* ((archive-flag (if archived-p 1 0))
-         (projects (sqlite-select (my/session-db)
-                                  "SELECT project_dir, MAX(updated_at) as latest
-                     FROM sessions WHERE archived = ? AND project_dir != ''
-                     GROUP BY project_dir ORDER BY latest DESC"
-                                  (list archive-flag))))
-    (cl-loop for row in projects
-             for first = t then nil
-             for dir = (nth 0 row)
-             for project = (file-name-nondirectory (directory-file-name dir))
-             collect
-             `(:name ,(format "%s: %s" (if archived-p "Archived" "Sessions") project)
-               :narrow ,(if archived-p ?x ?a)
-               :category agent-session
-               ,@(when first (unless archived-p '(:default t)))
-               ,@(when archived-p '(:hidden t))
-               :items ,(let ((d dir) (ap archived-p))
-                         (lambda () (my/session--make-items ap d)))
-               :annotate ,#'my/session--annotate
-               :action ,(if archived-p
-                            #'my/session--action-unarchive
-                          #'my/session--action)
-               ,@(unless archived-p
-                   `(:new ,(lambda (_input) (agent-shell))))))))
-
-(defun my/session--annotate (cand)
-  "Annotate a session candidate with project, age, and live status."
-  (when-let* ((data (gethash cand my/session--candidates)))
-    (let* ((dir (plist-get data :dir))
-           (project (file-name-nondirectory (directory-file-name dir)))
-           (updated (plist-get data :updated))
-           (live-p (plist-get data :live-p)))
-      (concat (propertize (format " %s" project) 'face 'font-lock-comment-face)
-              (propertize (format " %s" (my/relative-time updated))
-                          'face 'font-lock-doc-face)
-              (when live-p
-                (propertize " ●" 'face 'success))))))
-
-(defun my/session--resume (session-id project-dir)
-  "Switch to or resume SESSION-ID in the correct workspace."
-  (let ((live (my/session-find-live-buffer session-id)))
-    (cond
-     ;; Live buffer in a known workspace: switch there
-     ((and live (my/session--workspace-of live))
-      (+workspace-switch (my/session--workspace-of live))
-      (pop-to-buffer live))
-     ;; Live buffer but orphaned from workspace: add to project workspace
-     (live
-      (unless (and project-dir (file-directory-p project-dir))
-        (user-error "Project directory no longer exists: %s" project-dir))
-      (let ((ws-name (file-name-nondirectory (directory-file-name project-dir))))
-        (+workspace-switch ws-name t)
-        (persp-add-buffer live)
-        (pop-to-buffer live)))
-     ;; Dead session: create in project workspace
-     (t
-      (unless (and project-dir (file-directory-p project-dir))
-        (user-error "Project directory no longer exists: %s" project-dir))
-      (let* ((ws-name (file-name-nondirectory (directory-file-name project-dir)))
-             (_ (+workspace-switch ws-name t))
-             (default-directory project-dir)
-             (buf (agent-shell-resume-session session-id)))
-        (when buf (persp-add-buffer buf)))))))
-
-(defun my/session--action (cand)
-  "Resume or switch to session CAND."
-  (when-let* ((data (gethash cand my/session--candidates)))
-    (my/session--resume (plist-get data :id) (plist-get data :dir))))
-
-(defun my/session--action-unarchive (cand)
-  "Resume session CAND and unarchive it."
-  (when-let* ((data (gethash cand my/session--candidates)))
-    (my/session-db-toggle-archive (plist-get data :id))
-    (my/session--resume (plist-get data :id) (plist-get data :dir))))
-
-(defvar my/session--history nil)
-
-(defun my/agent-shell-switcher ()
-  "Agent-shell session switcher. Also available via `SPC ,' narrowed to `a'."
-  (interactive)
-  (require 'consult)
-  (unless (sqlite-available-p) (user-error "SQLite not available"))
-  (clrhash my/session--candidates)
-  (consult--multi
-   (append (my/session--project-sources nil)
-           (my/session--project-sources t))
-   :prompt "Agent session (M-RET new): "
-   :history 'my/session--history
-   :require-match nil
-   :sort nil))
-
-(after! embark
-  (defvar-keymap my/session-embark-map
-    :doc "Actions for agent-shell sessions"
-    :parent embark-general-map
-    "a" #'my/session-embark-archive-toggle)
-  (add-to-list 'embark-keymap-alist '(agent-session . my/session-embark-map)))
-
-(defun my/session-embark-archive-toggle (cand)
-  "Toggle archive status of session CAND."
-  (when-let* ((data (gethash cand my/session--candidates))
-              (id (plist-get data :id)))
-    (my/session-db-toggle-archive id)
-    (message "Toggled archive: %s" (truncate-string-to-width cand 40))))
+(use-package! agent-shell-sessions-embark
+  :after (agent-shell-sessions-consult embark))
 
 
 ;; (use-package! magit-gptcommit

@@ -61,6 +61,8 @@
 (package! shell-maker)
 (package! acp)
 (package! agent-shell)
+(package! agent-shell-sessions
+  :recipe (:local-repo "~/src/agent-shell-sessions" :files ("*.el")))
 ;; (package! mcp)
 ;; (package! magit-gptcommit)
 ;; (package! aidermacs)
