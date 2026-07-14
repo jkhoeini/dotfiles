@@ -105,6 +105,7 @@
        ;;terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
        tree-sitter       ; syntax and parsing, sitting in a tree...
+       agent-sessions    ; persistent session tracking for agent-shell
        project-hub       ; unified buffer/workspace/agent session switcher
        ;;upload            ; map local to remote projects via ssh/ftp
 
