@@ -33,6 +33,24 @@
                            :test #'equal)))
     :action ,(lambda (name &rest _) (+workspace/switch-to name))))
 
+(defvar +project-hub--source-projects
+  `(:name "Project"
+    :narrow ?p
+    :hidden t
+    :face font-lock-keyword-face
+    :items ,(lambda ()
+              (when (bound-and-true-p persp-mode)
+                (let ((open (+workspace-list-names)))
+                  (cl-loop for dir in (projectile-known-projects)
+                           for name = (file-name-nondirectory
+                                       (directory-file-name dir))
+                           unless (member name open)
+                           collect (propertize name 'project-dir dir)))))
+    :action ,(lambda (name &rest _)
+               (let ((dir (get-text-property 0 'project-dir name)))
+                 (+project-hub-switch-to-project dir nil)
+                 (projectile-switch-project-by-name dir)))))
+
 (defun +project-hub--session-sources ()
   "Return agent-shell session consult sources, stripping :default."
   (when (and (fboundp 'sqlite-available-p) (sqlite-available-p)
@@ -49,7 +67,8 @@
   (require 'consult)
   (consult--multi
    (append (list '+project-hub--source-buffers
-                 '+project-hub--source-workspaces)
+                 '+project-hub--source-workspaces
+                 '+project-hub--source-projects)
            (+project-hub--session-sources))
    :prompt "Hub: "
    :history '+project-hub--history
