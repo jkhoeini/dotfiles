@@ -68,7 +68,8 @@
   (consult--multi
    (append (list '+project-hub--source-buffers
                  '+project-hub--source-workspaces
-                 '+project-hub--source-projects)
+                 '+project-hub--source-projects
+                 '+project-hub--source-bookmarks)
            (+project-hub--session-sources))
    :prompt "Hub: "
    :history '+project-hub--history

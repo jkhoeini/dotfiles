@@ -7,4 +7,11 @@
 
 (add-hook! 'doom-after-modules-config-hook
   (defun +project-hub--bind-keys-h ()
-    (map! :leader :desc "Project hub" "," #'+project-hub/open)))
+    (map! :leader
+          :desc "Project hub" "," #'+project-hub/open
+          (:prefix ("k" . "hub")
+           :desc "Bookmark here" "m" #'+project-hub/bookmark-add
+           :desc "Toggle pin"    "p" #'+project-hub/bookmark-toggle-pin))))
+
+(after! embark
+  (define-key embark-bookmark-map (kbd "p") #'+project-hub/bookmark-toggle-pin))
