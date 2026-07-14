@@ -41,7 +41,7 @@
     :items ,(lambda ()
               (when (bound-and-true-p persp-mode)
                 (let ((open (+workspace-list-names)))
-                  (cl-loop for dir in (projectile-known-projects)
+                  (cl-loop for dir in (project-known-project-roots)
                            for name = (file-name-nondirectory
                                        (directory-file-name dir))
                            unless (member name open)
@@ -49,7 +49,7 @@
     :action ,(lambda (name &rest _)
                (let ((dir (get-text-property 0 'project-dir name)))
                  (+project-hub-switch-to-project dir nil)
-                 (projectile-switch-project-by-name dir)))))
+                 (project-switch-project dir)))))
 
 (defun +project-hub--session-sources ()
   "Return agent-shell session consult sources, stripping :default."
