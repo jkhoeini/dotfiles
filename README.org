@@ -73,7 +73,6 @@ dotfiles/
 - [ ] store session transcript in sqlite
 - [ ] backup of sqlite
 - [ ] full-text search of transcripts and RAG
-- [ ] agent buffer in the list of buffer
 - [ ] bookmark projects / sessions / buffers
 - [ ] package for melpa
 - [ ] deep link to sessions or even turns in org-files

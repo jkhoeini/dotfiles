@@ -114,55 +114,6 @@
 (map! :n "-" #'dired-jump)
 (map! :leader :desc "Run command" :n "SPC" 'execute-extended-command)
 
-(after! consult
-  (defvar my/consult-source-workspace-buffers
-    `(:name "Buffer"
-      :narrow ?b
-      :category buffer
-      :face consult-buffer
-      :state ,#'consult--buffer-state
-      :items ,(lambda ()
-                (let ((bufs (if (bound-and-true-p persp-mode)
-                                (persp-buffer-list)
-                              (buffer-list))))
-                  (cl-loop for b in bufs
-                           for name = (buffer-name b)
-                           unless (or (eq b (current-buffer))
-                                      (string-prefix-p " " name))
-                           collect name)))
-      :action ,(lambda (name &rest _) (switch-to-buffer name))))
-
-  (defvar my/consult-source-workspaces
-    `(:name "Workspace"
-      :narrow ?w
-      :face font-lock-constant-face
-      :items ,(lambda ()
-                (when (bound-and-true-p persp-mode)
-                  (cl-remove (+workspace-current-name)
-                             (+workspace-list-names)
-                             :test #'equal)))
-      :action ,(lambda (name &rest _) (+workspace/switch-to name)))))
-
-(defun my/unified-switcher ()
-  "Switch between buffers, workspaces, and agent sessions."
-  (interactive)
-  (require 'consult)
-  (when (fboundp 'agent-shell-sessions-consult--candidates)
-    (clrhash agent-shell-sessions-consult--candidates))
-  (consult--multi
-   (append
-    (list 'my/consult-source-workspace-buffers
-          'my/consult-source-workspaces)
-    (when (and (fboundp 'sqlite-available-p) (sqlite-available-p)
-               (fboundp 'agent-shell-sessions-consult-sources))
-      (append (agent-shell-sessions-consult-sources nil)
-              (agent-shell-sessions-consult-sources t))))
-   :prompt "Switch: "
-   :require-match nil
-   :sort nil))
-
-(map! :leader :desc "Switch buffer/workspace" "," #'my/unified-switcher)
-
 (require 'typst-ts-mode)
 (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
 (setq ;typst-ts-watch-options "--open"
@@ -287,26 +238,6 @@ current buffer's, reload dir-locals."
         agent-shell-anthropic-claude-environment
         (agent-shell-make-environment-variables :inherit-env t)
         agent-shell-dot-subdir-function #'my/agent-shell-dot-subdir))
-(use-package! agent-shell-sessions
-  :after agent-shell
-  :config
-  (agent-shell-sessions-mode-setup)
-  (setq agent-shell-sessions-switch-to-project-function
-        #'my/agent-shell-sessions-workspace-switch))
-
-(defun my/agent-shell-sessions-workspace-switch (project-dir buffer)
-  "Switch to the workspace for PROJECT-DIR, adding BUFFER if provided."
-  (when (and project-dir (file-directory-p project-dir))
-    (let ((ws-name (file-name-nondirectory (directory-file-name project-dir))))
-      (+workspace-switch ws-name t)
-      (when buffer (persp-add-buffer buffer)))))
-
-(use-package! agent-shell-sessions-consult
-  :after (agent-shell-sessions consult))
-
-(use-package! agent-shell-sessions-embark
-  :after (agent-shell-sessions-consult embark))
-
 
 ;; (use-package! magit-gptcommit
 ;;   :config
