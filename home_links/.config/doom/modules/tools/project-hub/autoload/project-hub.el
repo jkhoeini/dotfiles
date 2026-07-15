@@ -2,7 +2,7 @@
 
 (defvar +project-hub--history nil)
 
-(defvar +project-hub--pins nil)
+(defvar +project-hub--pins 'unloaded)
 (defvar +project-hub--pins-file
   (file-name-concat doom-data-dir "project-hub-pins.el"))
 
@@ -12,6 +12,9 @@
 
 (defun +project-hub--canon-dir (dir)
   (abbreviate-file-name (file-name-as-directory (expand-file-name dir))))
+
+(defun +project-hub--canon-file (file)
+  (abbreviate-file-name (expand-file-name file)))
 
 (defun +project-hub--pins-load ()
   (setq +project-hub--pins
@@ -31,8 +34,12 @@
     (with-temp-file +project-hub--pins-file
       (pp +project-hub--pins (current-buffer)))))
 
+(defun +project-hub--pins-ensure ()
+  (when (eq +project-hub--pins 'unloaded)
+    (+project-hub--pins-load)))
+
 (defun +project-hub--pins-get (type &optional project)
-  (unless +project-hub--pins (+project-hub--pins-load))
+  (+project-hub--pins-ensure)
   (pcase type
     ('buffers (alist-get (+project-hub--canon-dir (or project default-directory))
                          (alist-get 'buffers +project-hub--pins)
@@ -41,24 +48,25 @@
     ('sessions (alist-get 'sessions +project-hub--pins))))
 
 (defun +project-hub--pin-toggle (type target &optional project)
-  (unless +project-hub--pins (+project-hub--pins-load))
+  (+project-hub--pins-ensure)
   (unless +project-hub--pins (setq +project-hub--pins nil))
   (pcase type
     ('buffers
-     (let ((proj (+project-hub--canon-dir (or project default-directory))))
+     (let* ((proj (+project-hub--canon-dir (or project default-directory)))
+            (canon-target (+project-hub--canon-file target)))
        (unless (assq 'buffers +project-hub--pins)
-         (push '(buffers) +project-hub--pins))
+         (push (list 'buffers) +project-hub--pins))
        (let ((proj-pins (alist-get proj (alist-get 'buffers +project-hub--pins)
                                    nil nil #'equal)))
-         (if (member target proj-pins)
+         (if (member canon-target proj-pins)
              (setf (alist-get proj (alist-get 'buffers +project-hub--pins)
                               nil 'remove #'equal)
-                   (remove target proj-pins))
-           (push target (alist-get proj (alist-get 'buffers +project-hub--pins)
-                                   nil nil #'equal))))))
+                   (remove canon-target proj-pins))
+           (push canon-target (alist-get proj (alist-get 'buffers +project-hub--pins)
+                                         nil nil #'equal))))))
     ('projects
      (unless (assq 'projects +project-hub--pins)
-       (push '(projects) +project-hub--pins))
+       (push (list 'projects) +project-hub--pins))
      (let ((canon (+project-hub--canon-dir target)))
        (if (member canon (alist-get 'projects +project-hub--pins))
            (setf (alist-get 'projects +project-hub--pins)
@@ -66,7 +74,7 @@
          (push canon (alist-get 'projects +project-hub--pins)))))
     ('sessions
      (unless (assq 'sessions +project-hub--pins)
-       (push '(sessions) +project-hub--pins))
+       (push (list 'sessions) +project-hub--pins))
      (if (member target (alist-get 'sessions +project-hub--pins))
          (setf (alist-get 'sessions +project-hub--pins)
                (remove target (alist-get 'sessions +project-hub--pins)))
@@ -74,7 +82,10 @@
   (+project-hub--pins-save))
 
 (defun +project-hub--pinned-p (type target &optional project)
-  (member target (+project-hub--pins-get type project)))
+  (pcase type
+    ('buffers (member (+project-hub--canon-file target)
+                      (+project-hub--pins-get type project)))
+    (_ (member target (+project-hub--pins-get type project)))))
 
 ;;; Sources
 
@@ -98,27 +109,40 @@
                                          unless (or (eq b (current-buffer))
                                                     (string-prefix-p " " name))
                                          collect name))
-                     (open-files (cl-loop for name in open-bufs
-                                          for buf = (get-buffer name)
-                                          when (and buf (buffer-file-name buf))
-                                          collect (buffer-file-name buf)))
+                     ;; All files visible in this workspace (including current buffer)
+                     (ws-files (cl-loop for b in (if (bound-and-true-p persp-mode)
+                                                     (persp-buffer-list)
+                                                   (buffer-list))
+                                        when (buffer-file-name b)
+                                        collect (+project-hub--canon-file
+                                                 (buffer-file-name b))))
                      (pinned-open (cl-loop for name in open-bufs
                                            for buf = (get-buffer name)
                                            when (and buf (buffer-file-name buf)
-                                                     (member (buffer-file-name buf) pinned-files))
+                                                     (member (+project-hub--canon-file
+                                                              (buffer-file-name buf))
+                                                             pinned-files))
                                            collect (cons (concat "★ " name) name)))
                      (pinned-closed (cl-loop for f in pinned-files
-                                            unless (member f open-files)
-                                            collect (cons (concat "★ " (file-name-nondirectory f)) f)))
+                                            unless (member f ws-files)
+                                            for short = (file-name-nondirectory f)
+                                            ;; Disambiguate if needed
+                                            for display = (if (cl-count short pinned-files
+                                                                        :test (lambda (s path)
+                                                                                (equal s (file-name-nondirectory path))))
+                                                              (concat "★ " (abbreviate-file-name f))
+                                                            (concat "★ " short))
+                                            collect (cons display f)))
                      (unpinned-open (cl-loop for name in open-bufs
                                             for buf = (get-buffer name)
                                             unless (and buf (buffer-file-name buf)
-                                                        (member (buffer-file-name buf) pinned-files))
+                                                        (member (+project-hub--canon-file
+                                                                 (buffer-file-name buf))
+                                                                pinned-files))
                                             collect name)))
                 (append pinned-open pinned-closed unpinned-open)))
     :action ,(lambda (cand &rest _)
-               (if (get-buffer cand)
-                   (switch-to-buffer cand)
+               (unless (get-buffer cand)
                  (find-file cand)))
     :new ,(lambda (name) (switch-to-buffer (get-buffer-create name)))))
 
@@ -144,17 +168,28 @@
               (when (bound-and-true-p persp-mode)
                 (let* ((open (+workspace-list-names))
                        (pinned-dirs (+project-hub--pins-get 'projects))
-                       (all-dirs (project-known-project-roots)))
+                       (all-dirs (project-known-project-roots))
+                       (seen-names (make-hash-table :test #'equal)))
+                  ;; Count name occurrences for disambiguation
+                  (dolist (dir all-dirs)
+                    (let ((n (file-name-nondirectory (directory-file-name dir))))
+                      (puthash n (1+ (gethash n seen-names 0)) seen-names)))
                   (append
                    (cl-loop for dir in pinned-dirs
                             for name = (file-name-nondirectory (directory-file-name dir))
                             when (cl-find dir all-dirs :test #'equal)
-                            collect (cons (concat "★ " name) dir))
+                            for display = (if (> (gethash name seen-names 0) 1)
+                                              (concat "★ " (abbreviate-file-name dir))
+                                            (concat "★ " name))
+                            collect (cons display dir))
                    (cl-loop for dir in all-dirs
                             for name = (file-name-nondirectory (directory-file-name dir))
                             unless (or (member name open)
                                        (cl-find dir pinned-dirs :test #'equal))
-                            collect (cons name dir))))))
+                            for display = (if (> (gethash name seen-names 0) 1)
+                                              (abbreviate-file-name dir)
+                                            name)
+                            collect (cons display dir))))))
     :action ,(lambda (dir &rest _)
                (+project-hub-switch-to-project dir nil)
                (project-switch-project dir))))
@@ -214,13 +249,16 @@
   "Toggle pin for buffer CAND in the current project."
   (interactive "sBuffer: ")
   (let* ((file (or (and (get-buffer cand) (buffer-file-name (get-buffer cand)))
-                   (and (file-exists-p cand) cand)))
-         (proj (+project-hub--project-dir)))
-    (if file
+                   cand))
+         (proj (+project-hub--project-dir))
+         (canon (+project-hub--canon-file file)))
+    (if (or (and (get-buffer cand) (buffer-file-name (get-buffer cand)))
+            (+project-hub--pinned-p 'buffers canon proj)
+            (file-exists-p cand))
         (progn
-          (+project-hub--pin-toggle 'buffers file proj)
-          (message "%s %s" (file-name-nondirectory file)
-                   (if (+project-hub--pinned-p 'buffers file proj) "pinned" "unpinned")))
+          (+project-hub--pin-toggle 'buffers canon proj)
+          (message "%s %s" (file-name-nondirectory canon)
+                   (if (+project-hub--pinned-p 'buffers canon proj) "pinned" "unpinned")))
       (message "Cannot pin non-file buffer: %s" cand))))
 
 ;;;###autoload
