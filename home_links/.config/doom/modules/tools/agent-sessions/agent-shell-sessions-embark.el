@@ -19,6 +19,7 @@
 (require 'agent-shell-sessions-consult)
 
 (declare-function agent-shell "agent-shell")
+(declare-function shell-maker-set-buffer-name "shell-maker")
 
 (defun agent-shell-sessions-embark-archive-toggle (cand)
   "Toggle archive status of session CAND."
@@ -39,8 +40,7 @@
         (agent-shell-sessions-db-update-title id title)
         (when-let* ((buf (agent-shell-sessions-find-live-buffer id))
                     ((bound-and-true-p agent-shell-sessions-rename-buffer)))
-          (with-current-buffer buf
-            (rename-buffer (format "*%s*" title) t)))
+          (shell-maker-set-buffer-name buf (format "*%s*" title)))
         (message "Renamed: %s" title))
     (user-error "Unknown session: %s" cand)))
 

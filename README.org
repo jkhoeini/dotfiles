@@ -76,8 +76,8 @@ dotfiles/
 - [ ] bookmark projects / sessions / buffers
 - [ ] package for melpa
 - [ ] deep link to sessions or even turns in org-files
-- [ ] use embark actions for new session, bookmark, etc
 - [ ] select what harness (opencode, cursor, codex) when creating new session. the db should store what harness was this session from
+- [ ] session titles are not very nice as it is
 * TODO backups
 ** zplug packages
 

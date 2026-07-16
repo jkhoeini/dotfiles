@@ -19,8 +19,11 @@
 (require 'map)
 
 (declare-function agent-shell-resume-session "agent-shell")
+(declare-function agent-shell-start "agent-shell")
 (declare-function agent-shell-subscribe-to "agent-shell")
 (declare-function agent-shell-buffers "agent-shell")
+(declare-function agent-shell--resolve-config-designator "agent-shell")
+(declare-function shell-maker-set-buffer-name "shell-maker")
 
 (defgroup agent-shell-sessions nil
   "Session tracking for agent-shell."
@@ -68,22 +71,31 @@ When nil, sessions are resumed in the current workspace with `pop-to-buffer'."
           session_id TEXT PRIMARY KEY,
           title TEXT,
           project_dir TEXT,
+          agent_type TEXT,
           archived INTEGER DEFAULT 0,
           created_at INTEGER,
           updated_at INTEGER)")
+      (unless (sqlite-select db
+               "SELECT 1 FROM pragma_table_info('sessions') WHERE name='agent_type'")
+        (sqlite-execute db "ALTER TABLE sessions ADD COLUMN agent_type TEXT")
+        (sqlite-execute db
+         "UPDATE sessions SET agent_type = 'claude-code' WHERE agent_type IS NULL"))
       (setq agent-shell-sessions--db-connection db)))
   agent-shell-sessions--db-connection)
 
-(defun agent-shell-sessions-db-upsert (session-id project-dir)
-  "Insert or update SESSION-ID with PROJECT-DIR, preserving created_at."
+(defun agent-shell-sessions-db-upsert (session-id project-dir &optional agent-type)
+  "Insert or update SESSION-ID with PROJECT-DIR and AGENT-TYPE.
+AGENT-TYPE is a string like \"claude-code\" or \"opencode\".
+When AGENT-TYPE is nil, preserves any existing value."
   (let ((now (truncate (float-time))))
     (sqlite-execute (agent-shell-sessions-db)
-     "INSERT INTO sessions (session_id, project_dir, created_at, updated_at)
-      VALUES (?, ?, ?, ?)
+     "INSERT INTO sessions (session_id, project_dir, agent_type, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?)
       ON CONFLICT(session_id) DO UPDATE SET
         project_dir = excluded.project_dir,
+        agent_type = COALESCE(excluded.agent_type, sessions.agent_type),
         updated_at = excluded.updated_at"
-     (list session-id project-dir now now))))
+     (list session-id project-dir agent-type now now))))
 
 (defun agent-shell-sessions-db-update-title (session-id title)
   "Update TITLE for SESSION-ID, truncating and collapsing newlines."
@@ -115,7 +127,7 @@ When nil, sessions are resumed in the current workspace with `pop-to-buffer'."
 (defun agent-shell-sessions-db-query-project (project-dir archived-p)
   "Query sessions for PROJECT-DIR with ARCHIVED-P status."
   (sqlite-select (agent-shell-sessions-db)
-   "SELECT session_id, title, project_dir, updated_at
+   "SELECT session_id, title, project_dir, updated_at, agent_type
     FROM sessions WHERE archived = ? AND project_dir = ?
     ORDER BY updated_at DESC"
    (list (if archived-p 1 0) project-dir)))
@@ -180,25 +192,35 @@ Add this to `agent-shell-mode-hook'."
        :shell-buffer buf
        :event 'init-finished
        :on-event (lambda (_event)
-                   (when-let* ((id (agent-shell-sessions--buffer-session-id buf)))
-                     (agent-shell-sessions-db-upsert
-                      id (buffer-local-value 'default-directory buf)))))
+                   (when (buffer-live-p buf)
+                     (when-let* ((id (agent-shell-sessions--buffer-session-id buf)))
+                       (let ((agent-type
+                              (with-current-buffer buf
+                                (when-let* ((ident (map-nested-elt
+                                                    agent-shell--state
+                                                    '(:agent-config :identifier))))
+                                  (symbol-name ident)))))
+                         (agent-shell-sessions-db-upsert
+                          id (buffer-local-value 'default-directory buf)
+                          agent-type))))))
       (agent-shell-subscribe-to
        :shell-buffer buf
        :event 'session-title-changed
        :on-event (lambda (event)
-                   (when-let* ((id (agent-shell-sessions--buffer-session-id buf))
-                               (title (map-nested-elt event '(:data :title))))
-                     (agent-shell-sessions-db-update-title id title)
-                     (when agent-shell-sessions-rename-buffer
-                       (with-current-buffer buf
-                         (rename-buffer (format "*%s*" title) t))))))
+                   (when (buffer-live-p buf)
+                     (when-let* ((id (agent-shell-sessions--buffer-session-id buf))
+                                 (title (map-nested-elt event '(:data :title))))
+                       (agent-shell-sessions-db-update-title id title)
+                       (when agent-shell-sessions-rename-buffer
+                         (with-current-buffer buf
+                           (shell-maker-set-buffer-name buf (format "*%s*" title))))))))
       (agent-shell-subscribe-to
        :shell-buffer buf
        :event 'turn-complete
        :on-event (lambda (_event)
-                   (when-let* ((id (agent-shell-sessions--buffer-session-id buf)))
-                     (agent-shell-sessions-db-bump-updated id)))))))
+                   (when (buffer-live-p buf)
+                     (when-let* ((id (agent-shell-sessions--buffer-session-id buf)))
+                       (agent-shell-sessions-db-bump-updated id))))))))
 
 ;;;###autoload
 (defun agent-shell-sessions-mode-setup ()
@@ -208,8 +230,10 @@ Call this once, or add to your init."
 
 ;;; Resume
 
-(defun agent-shell-sessions-resume (session-id project-dir)
+(defun agent-shell-sessions-resume (session-id project-dir &optional agent-type)
   "Switch to or resume SESSION-ID from PROJECT-DIR.
+AGENT-TYPE is a string like \"claude-code\" identifying the agent harness.
+When non-nil, resumes with the correct agent config automatically.
 Uses `agent-shell-sessions-switch-to-project-function' for workspace management."
   (let ((live (agent-shell-sessions-find-live-buffer session-id)))
     (cond
@@ -223,7 +247,13 @@ Uses `agent-shell-sessions-switch-to-project-function' for workspace management.
       (when agent-shell-sessions-switch-to-project-function
         (funcall agent-shell-sessions-switch-to-project-function project-dir nil))
       (let* ((default-directory project-dir)
-             (buf (agent-shell-resume-session session-id)))
+             (config (when (and agent-type
+                               (not (string-empty-p agent-type))
+                               (fboundp 'agent-shell--resolve-config-designator))
+                       (agent-shell--resolve-config-designator (intern agent-type))))
+             (buf (if config
+                      (agent-shell-start :config config :session-id session-id)
+                    (agent-shell-resume-session session-id))))
         (when (and buf agent-shell-sessions-switch-to-project-function)
           (funcall agent-shell-sessions-switch-to-project-function project-dir buf)))))))
 

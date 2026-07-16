@@ -34,7 +34,7 @@ ARCHIVED-P selects archive status.  PROJECT-DIR limits to one project."
         (rows (if project-dir
                   (agent-shell-sessions-db-query-project project-dir archived-p)
                 (sqlite-select (agent-shell-sessions-db)
-                 "SELECT session_id, title, project_dir, updated_at
+                 "SELECT session_id, title, project_dir, updated_at, agent_type
                   FROM sessions WHERE archived = ? ORDER BY updated_at DESC"
                  (list (if archived-p 1 0))))))
     (cl-loop for row in rows
@@ -43,13 +43,14 @@ ARCHIVED-P selects archive status.  PROJECT-DIR limits to one project."
              for title = (or (nth 1 row) "Untitled")
              for dir = (or (nth 2 row) "")
              for updated = (nth 3 row)
+             for agent-type = (nth 4 row)
              for project = (if (string-empty-p dir) ""
                              (file-name-nondirectory
                               (directory-file-name dir)))
              collect
              (let* ((live-buf (cdr (assoc id live)))
                     (data (list :id id :title title :dir dir :updated updated
-                                :live-p (and live-buf t)))
+                                :agent-type agent-type :live-p (and live-buf t)))
                     (cand (propertize
                            (concat (truncate-string-to-width title 50 nil ?\s)
                                    (propertize (concat " " project)
@@ -63,13 +64,14 @@ ARCHIVED-P selects archive status.  PROJECT-DIR limits to one project."
 (defun agent-shell-sessions-consult--db-lookup (id)
   "Look up session ID directly in the database, return a plist or nil."
   (when-let* ((row (car (sqlite-select (agent-shell-sessions-db)
-                         "SELECT session_id, title, project_dir, updated_at
+                         "SELECT session_id, title, project_dir, updated_at, agent_type
                           FROM sessions WHERE session_id = ?"
                          (list id)))))
     (list :id (nth 0 row)
           :title (or (nth 1 row) "Untitled")
           :dir (or (nth 2 row) "")
           :updated (nth 3 row)
+          :agent-type (nth 4 row)
           :live-p (and (agent-shell-sessions-find-live-buffer (nth 0 row)) t))))
 
 (defun agent-shell-sessions-consult-session-data (cand)
@@ -83,11 +85,15 @@ then direct DB lookup by session ID."
       (agent-shell-sessions-consult--db-lookup cand)))
 
 (defun agent-shell-sessions-consult-annotate (cand)
-  "Annotate session CAND with age and live status."
+  "Annotate session CAND with age, agent type, and live status."
   (when-let* ((data (agent-shell-sessions-consult-session-data cand)))
     (let* ((updated (plist-get data :updated))
+           (agent-type (plist-get data :agent-type))
            (live-p (plist-get data :live-p)))
-      (concat (propertize (format " %s" (agent-shell-sessions-relative-time updated))
+      (concat (when agent-type
+                (propertize (format " [%s]" agent-type)
+                            'face 'font-lock-type-face))
+              (propertize (format " %s" (agent-shell-sessions-relative-time updated))
                           'face 'font-lock-doc-face)
               (when live-p
                 (propertize " ●" 'face 'success))))))
@@ -95,13 +101,17 @@ then direct DB lookup by session ID."
 (defun agent-shell-sessions-consult--action (cand)
   "Resume or switch to session CAND."
   (when-let* ((data (agent-shell-sessions-consult-session-data cand)))
-    (agent-shell-sessions-resume (plist-get data :id) (plist-get data :dir))))
+    (agent-shell-sessions-resume (plist-get data :id)
+                                 (plist-get data :dir)
+                                 (plist-get data :agent-type))))
 
 (defun agent-shell-sessions-consult--action-unarchive (cand)
   "Resume session CAND and unarchive it."
   (when-let* ((data (agent-shell-sessions-consult-session-data cand)))
     (agent-shell-sessions-db-toggle-archive (plist-get data :id))
-    (agent-shell-sessions-resume (plist-get data :id) (plist-get data :dir))))
+    (agent-shell-sessions-resume (plist-get data :id)
+                                 (plist-get data :dir)
+                                 (plist-get data :agent-type))))
 
 (defun agent-shell-sessions-consult--current-project-source ()
   "Hidden consult source for the current project's sessions, narrow key ?p."

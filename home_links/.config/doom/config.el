@@ -233,8 +233,11 @@ current buffer's, reload dir-locals."
                         (expand-file-name sanitized-cwd
                                           (expand-file-name "agent-shell" state-home)))))
 
-  (setq agent-shell-preferred-agent-config 'claude-code
+  (setq agent-shell-preferred-agent-config '(preselect . claude-code)
+        agent-shell-session-strategy 'new
+        agent-shell-session-restore-verbosity 'full
         agent-shell-anthropic-claude-acp-command '("claude-agent-acp")
+        agent-shell-cursor-acp-command '("cursor-agent" "acp")
         agent-shell-anthropic-claude-environment
         (agent-shell-make-environment-variables :inherit-env t)
         agent-shell-dot-subdir-function #'my/agent-shell-dot-subdir))

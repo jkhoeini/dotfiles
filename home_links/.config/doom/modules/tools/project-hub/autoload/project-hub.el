@@ -124,14 +124,14 @@
                                                              pinned-files))
                                            collect (cons (concat "★ " name) name)))
                      (pinned-closed (cl-loop for f in pinned-files
-                                            unless (member f ws-files)
                                             for short = (file-name-nondirectory f)
-                                            ;; Disambiguate if needed
-                                            for display = (if (cl-count short pinned-files
-                                                                        :test (lambda (s path)
-                                                                                (equal s (file-name-nondirectory path))))
+                                            for display = (if (> (cl-count short pinned-files
+                                                                           :test (lambda (s path)
+                                                                                   (equal s (file-name-nondirectory path))))
+                                                                 1)
                                                               (concat "★ " (abbreviate-file-name f))
                                                             (concat "★ " short))
+                                            unless (member f ws-files)
                                             collect (cons display f)))
                      (unpinned-open (cl-loop for name in open-bufs
                                             for buf = (get-buffer name)
@@ -177,18 +177,18 @@
                   (append
                    (cl-loop for dir in pinned-dirs
                             for name = (file-name-nondirectory (directory-file-name dir))
-                            when (cl-find dir all-dirs :test #'equal)
                             for display = (if (> (gethash name seen-names 0) 1)
                                               (concat "★ " (abbreviate-file-name dir))
                                             (concat "★ " name))
+                            when (cl-find dir all-dirs :test #'equal)
                             collect (cons display dir))
                    (cl-loop for dir in all-dirs
                             for name = (file-name-nondirectory (directory-file-name dir))
-                            unless (or (member name open)
-                                       (cl-find dir pinned-dirs :test #'equal))
                             for display = (if (> (gethash name seen-names 0) 1)
                                               (abbreviate-file-name dir)
                                             name)
+                            unless (or (member name open)
+                                       (cl-find dir pinned-dirs :test #'equal))
                             collect (cons display dir))))))
     :action ,(lambda (dir &rest _)
                (+project-hub-switch-to-project dir nil)
