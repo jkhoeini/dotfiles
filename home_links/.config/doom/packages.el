@@ -66,8 +66,6 @@
 ;; (package! aidermacs)
 ;; (package! ob-aider
 ;;   :recipe (:host github :repo "localredhead/ob-aider.el"))
-;; eat is worst than vterm
-;; (package! eat :recipe (:host codeberg :repo "akib/emacs-eat"))
 (package! drepl)
 (package! leetcode)
 (package! mise)
@@ -78,4 +76,3 @@
 (package! build-farm)
 (package! org-ql)
 (package! majutsu :recipe (:host github :repo "0WD0/majutsu"))
-(package! ghostel :recipe (:host github :repo "dakra/ghostel"))

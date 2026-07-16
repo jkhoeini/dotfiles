@@ -110,12 +110,6 @@ eval "$(mise activate zsh)"
 # NOTE disabled for performance. Instead the envs are set in nix
 # eval $(luarocks path)
 
-# help cursor-ide detect command is finished
-[[ -s "$HOME/.iterm2_shell_integration.zsh" ]] && source "$HOME/.iterm2_shell_integration.zsh"
-
-[ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
-  source "$EAT_SHELL_INTEGRATION_DIR/zsh"
-
 [[ -s "$HOME/spotify.zsh" ]] && source "$HOME/spotify.zsh"
 
 source <(jj util completion zsh)

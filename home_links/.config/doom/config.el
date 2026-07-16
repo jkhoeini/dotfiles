@@ -286,9 +286,6 @@ current buffer's, reload dir-locals."
           ;; eshell-visual-options (append eshell-visual-options '(("git" "--help" "--paginate")))
           eshell-destroy-buffer-when-process-dies nil)
 
-  (require 'ghostel-eshell)
-  (ghostel-eshell-visual-command-mode +1)
-
   (add-hook 'eshell-mode-hook (cmd! (eldoc-mode -1)))
 
   (set-eshell-alias!
@@ -315,18 +312,6 @@ current buffer's, reload dir-locals."
                 (set-process-sentinel proc #'+term-auto-normal-state-h))))
 
   (map! :map term-mode-map
-        :n "q" (cmds! (not (process-live-p (get-buffer-process (current-buffer))))
-                      #'kill-current-buffer)))
-
-(after! vterm
-  (setopt vterm-kill-buffer-on-exit nil)
-
-  (add-hook 'vterm-exit-functions
-            (lambda (buf _event)
-              (with-current-buffer buf
-                (evil-normal-state))))
-
-  (map! :map vterm-mode-map
         :n "q" (cmds! (not (process-live-p (get-buffer-process (current-buffer))))
                       #'kill-current-buffer)))
 
@@ -405,28 +390,38 @@ current buffer's, reload dir-locals."
 
   (setopt telega-directory (expand-file-name "telega" (getenv "XDG_STATE_HOME"))))
 
-(use-package! ghostel
-  :commands ghostel
-  :config
+(after! ghostel
+  (setopt ghostel-module-auto-install 'download
+          ghostel-module-directory
+          (expand-file-name "ghostel/" doom-data-dir)
+          ghostel-max-scrollback (* 100 1024 1024)
+          ghostel-kitty-graphics-storage-limit (* 320 1024 1024)
+          ghostel-initial-input-mode 'semi-char
+          ghostel-tramp-shell-integration t
+          ghostel-ssh-install-terminfo 'auto
+          ghostel-enable-osc52 t)
 
-  (setq ghostel-module-auto-install 'download)
+  ;; Ghostel added this option in 0.44. `setq` is intentionally used instead
+  ;; of `setopt` so older Doom-pinned versions load without an unknown-option
+  ;; error; the value takes effect automatically after Doom adopts 0.44+.
+  (setq ghostel-line-spacing 0)
 
-  (defadvice! my/ghostel-per-workspace-a (&rest args)
-    :around #'ghostel
-    (let ((ghostel-buffer-name
-           (if (bound-and-true-p persp-mode)
-               (format "*ghostel:%s*" (+workspace-current-name))
-             ghostel-buffer-name)))
-      (apply args)))
+  ;; Preserve OSC 9;4 progress and Ghostel input-mode indicators.
+  (remove-hook 'ghostel-mode-hook #'mode-line-invisible-mode)
 
-  (add-hook 'ghostel-mode-hook
-            (lambda ()
-              (when (bound-and-true-p persp-mode)
-                (persp-add-buffer (current-buffer))))))
+  (add-to-list 'project-switch-commands
+               '(ghostel-project "Ghostel") t))
 
+;; User rules are pushed ahead of Doom defaults. Do not wrap this in
+;; `(after! popup)`: the popup module does not provide a `popup` feature.
+(set-popup-rule! "^\\*doom:ghostel-popup"
+  :size 0.35
+  :vslot -5
+  :select t
+  :quit nil
+  :ttl nil
+  :modeline t)
+
+;; Doom already binds `SPC o t` and `SPC o T` when :term ghostel is enabled.
 (map! :leader
-      :desc "Terminal (ghostel)" "o t" #'ghostel
-      :desc "Terminal here"      "o T" (cmd! (let ((default-directory
-                                                    (or (doom-project-root)
-                                                        default-directory)))
-                                               (ghostel))))
+      :desc "Project terminal" "p t" #'ghostel-project)
