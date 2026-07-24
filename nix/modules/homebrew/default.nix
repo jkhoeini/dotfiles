@@ -26,6 +26,8 @@
     "mise"
     # AI coding agent, built for the terminal
     "opencode"
+    # AI agent toolkit
+    "pi-coding-agent"
     # Create, run, and share large language models (LLMs)
     {
       name = "ollama";
