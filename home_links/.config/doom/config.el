@@ -464,6 +464,14 @@ current buffer's, reload dir-locals."
 
   (setopt telega-directory (expand-file-name "telega" (getenv "XDG_STATE_HOME"))))
 
+;; === Tramp ===
+
+;; Let Tramp share the SSH ControlMaster connection from ~/.ssh/config
+;; (ControlMaster auto / ControlPersist 60s), so reconnects after
+;; Tailscale or sleep drops are near-instant for remote file ops.
+(after! tramp
+  (setq tramp-use-connection-share nil))
+
 (after! ghostel
   (setopt ghostel-module-auto-install 'download
           ghostel-module-directory
