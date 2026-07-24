@@ -14,6 +14,7 @@ deno = "latest"
 bun = "1.3.10"
 just = "latest"
 zig = "0.15.2"
+"pipx:litellm" = { version = "latest", uvx = true, uvx_args = "--with 'litellm[proxy]'" }
 
 [settings]
 idiomatic_version_file_enable_tools = []

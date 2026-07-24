@@ -5,6 +5,7 @@
     ./aerospace.nix
     ./jankyborders.nix
     ./lgtm.nix
+    ./litellm.nix
   ];
 
   services.ipfs.enable = true;
