@@ -57,6 +57,7 @@
   :recipe (:type git :host codeberg :repo "meow_king/typst-ts-mode"))
 (package! paren-face)
 (package! gptel :recipe (:nonrecursive t))
+(package! gptel-agent)
 (package! eca :recipe (:host github :repo "editor-code-assistant/eca-emacs" :files ("*.el")))
 (package! shell-maker)
 (package! acp)

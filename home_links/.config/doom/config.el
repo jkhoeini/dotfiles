@@ -210,12 +210,86 @@ current buffer's, reload dir-locals."
 
 (after! gptel
   (require 'gptel-integrations)
-  (setq
-   gptel-model 'devstral-small-2:latest
-   gptel-backend (gptel-make-ollama "Ollama"
-                   :host "localhost:11434"
-                   :stream t
-                   :models '(devstral-small-2:latest magistral:latest))))
+  (require 'gptel-openai-responses)
+
+  (let ((openai-chat-models
+         (seq-filter (lambda (model)
+                       (memq (car model) '(gpt-5.5 gpt-5.5-pro)))
+                     gptel--openai-models))
+        (openai-responses-models
+         (seq-filter (lambda (model)
+                       (memq (car model) '(gpt-5.6-sol
+                                           gpt-5.6-terra
+                                           gpt-5.6-luna)))
+                     gptel--openai-models)))
+    (gptel-make-openai "LiteLLM Chat"
+      :host "127.0.0.1:4000"
+      :protocol "http"
+      :endpoint "/v1/chat/completions"
+      :stream t
+      :models
+      (append
+       openai-chat-models
+       '((glm-5.2
+          :description "GLM 5.2"
+          :capabilities (tool-use json reasoning)
+          :context-window 128)
+         (deepseek-v4-pro
+          :description "DeepSeek V4 Pro"
+          :capabilities (tool-use json reasoning)
+          :context-window 128)
+         (deepseek-v4-flash
+          :description "DeepSeek V4 Flash"
+          :capabilities (tool-use json reasoning)
+          :context-window 128)
+         (claude-opus-4-8
+          :description "Claude Opus 4.8"
+          :capabilities (tool-use json reasoning)
+          :context-window 128
+          :request-params (:reasoning_effort "high"))
+         (claude-sonnet-5
+          :description "Claude Sonnet 5"
+          :capabilities (tool-use json reasoning)
+          :context-window 128)
+         (claude-fable-5
+          :description "Claude Fable 5"
+          :capabilities (tool-use json reasoning)
+          :context-window 128)
+         (devstral-small
+          :description "Devstral Small 2"
+          :capabilities (tool-use json)
+          :context-window 128)
+         (magistral
+          :description "Magistral"
+          :capabilities (tool-use json reasoning)
+          :context-window 128))))
+
+    (setq gptel-backend
+          (gptel-make-openai-responses "LiteLLM Responses"
+            :host "127.0.0.1:4000"
+            :protocol "http"
+            :endpoint "/v1/responses"
+            :stream t
+            :request-params '(:reasoning (:effort "high"))
+            :models openai-responses-models)
+          gptel-model 'gpt-5.6-sol))
+
+  ;; Direct Ollama fallback when proxy is down
+  (gptel-make-ollama "Ollama"
+    :host "localhost:11434"
+    :stream t
+    :models '((devstral-small-2:latest
+               :capabilities (tool-use json))
+              (magistral:latest
+               :capabilities (tool-use json reasoning)))))
+
+(use-package! gptel-agent
+  :after gptel
+  :config
+  ;; ~/.claude/skills contains compatibility symlinks that the recursive
+  ;; gptel-agent scanner cannot follow safely; ~/.agents is canonical.
+  (setq gptel-agent-skill-dirs '("~/.agents/skills/" ".agents/skills/"))
+  (gptel-agent-update))
 
 (use-package! agent-shell
   :commands (agent-shell agent-shell-toggle agent-shell-anthropic-start-claude-code)
