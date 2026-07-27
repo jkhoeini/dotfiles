@@ -6,7 +6,9 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages '(drepl leetcode mise))
  '(safe-local-variable-values
-   '((typst-preview--master-file . "/Users/mohammadk/Dev/resume/resume.typ")
+   '((cider-ns-refresh-after-fn . "wmbb.system/start-system!")
+     (cider-ns-refresh-before-fn . "wmbb.system/stop-system!")
+     (typst-preview--master-file . "/Users/mohammadk/Dev/resume/resume.typ")
      (typst-preview--master-file . "/Users/mohammadk/src/resume/resume.typ"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
