@@ -26,6 +26,9 @@ in
     ];
     NODE_REPL_HISTORY = "${XDG_DATA_HOME}/node_repl_history";
     NPM_CONFIG_USERCONFIG = "${XDG_CONFIG_HOME}/npm/npmrc";
+    # omp joins this with $HOME via path.join (NOT path.resolve), so it MUST
+    # be relative; an absolute value would double the home path.
+    PI_CONFIG_DIR = ".config/omp";
     _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${XDG_CONFIG_HOME}/java -Djavafx.cachedir=${XDG_CACHE_HOME}/openjfx";
     PKG_CACHE_PATH = "${XDG_CACHE_HOME}/pkg-cache";
     PSQL_HISTORY = "${XDG_DATA_HOME}/psql_history";
@@ -33,7 +36,7 @@ in
     SOLARGRAPH_CACHE = "${XDG_CACHE_HOME}/solargraph";
 
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true";
-    PUPPETEER_EXECUTABLE_PATH = "`which chromium`";
+    PUPPETEER_EXECUTABLE_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
     VISUAL = "emacsclient";
     EDITOR = "emacsclient";
     GIT_EDITOR = "emacsclient -c";
