@@ -10,7 +10,7 @@
 	tool = ediff
 	conflictstyle = diff3
 [mergetool "ediff"]
-	cmd = ec -e \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\")\"
+	cmd = emacsclient -c -a \"\" -e \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\")\"
 [fetch]
 	prune = true
 [filter "lfs"]
