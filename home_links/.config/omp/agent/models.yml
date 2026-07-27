@@ -1,0 +1,19 @@
+providers:
+  litellm:
+    baseUrl: http://127.0.0.1:4000/v1
+    api: openai-completions
+    auth: none
+    discovery:
+      type: openai-models-list
+    modelOverrides:
+      # omp's catalog doesn't know these Spotify-internal model aliases;
+      # fix the capabilities that discovery + catalog match get wrong.
+      glm-5.2:
+        maxTokens: 16384
+
+  litellm-responses:
+    baseUrl: http://127.0.0.1:4000/v1
+    api: openai-responses
+    auth: none
+    discovery:
+      type: openai-models-list

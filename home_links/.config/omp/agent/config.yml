@@ -1,0 +1,18 @@
+setupVersion: 2
+modelRoles:
+  smol: litellm/deepseek-v4-flash:auto
+  slow: litellm/claude-fable-5-1:high
+  plan: litellm-responses/gpt-5.6-sol:high
+  default: litellm/glm-5.3-flash:high
+  advisor: litellm/claude-sonnet-5:auto
+dev:
+  autoqaConsent: denied
+providers:
+  webSearchGeminiModel: gemini-3.6-flash
+browser:
+  {}
+composer:
+  shape: rail
+display:
+  hideToolActivity: false
+hideThinkingBlock: false
