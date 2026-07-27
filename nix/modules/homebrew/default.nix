@@ -28,11 +28,6 @@
     "opencode"
     # AI agent toolkit
     "pi-coding-agent"
-    # Create, run, and share large language models (LLMs)
-    {
-      name = "ollama";
-      restart_service = "changed";
-    }
     # Pinentry for GPG on Mac
     "pinentry-mac"
     # Paste PNG into files
