@@ -40,7 +40,10 @@ macos ()
   echo "Setting login shell to Nix zsh"
   chsh -s /run/current-system/sw/bin/zsh
 
-  brew services restart d12frosted/emacs-plus/emacs-plus@30
+  # Emacs daemon is managed by nix-darwin (org.nixos.emacs launchd agent).
+  # Do NOT `brew services restart emacs-plus@30` here: it copies the formula's
+  # plist into ~/Library/LaunchAgents with RunAtLoad+KeepAlive, spawning a
+  # second immortal daemon that doubles every message and races the nix one.
 
   if [[ ! -e "$HOME/.config/nvim" ]]; then
     echo "Installing LazyVim"
