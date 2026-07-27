@@ -7,14 +7,22 @@
   (file-name-concat doom-data-dir "project-hub-pins.el"))
 
 (defun +project-hub--project-dir ()
-  (or (when-let* ((pr (project-current))) (expand-file-name (project-root pr)))
-      default-directory))
+  (or (doom-project-root) default-directory))
 
 (defun +project-hub--canon-dir (dir)
   (abbreviate-file-name (file-name-as-directory (expand-file-name dir))))
 
 (defun +project-hub--canon-file (file)
   (abbreviate-file-name (expand-file-name file)))
+
+(defun +project-hub--workspace-project-dirs ()
+  (when (bound-and-true-p persp-mode)
+    (delq nil
+          (mapcar (lambda (name)
+                    (when-let* ((workspace (+workspace-get name t))
+                                (project-dir (persp-parameter '+workspace-project workspace)))
+                      (+project-hub--canon-dir project-dir)))
+                  (+workspace-list-names)))))
 
 (defun +project-hub--pins-load ()
   (setq +project-hub--pins
@@ -89,6 +97,26 @@
 
 ;;; Sources
 
+;; Special buffers: `*-prefixed' buffers that belong to no workspace
+;; (*Messages*, *scratch*, ...). Workspace members (e.g. the `SPC o t' ghostel
+;; terminals) are excluded via the persp--buffer-in-persps index, so nothing
+;; duplicates. Listed last, after all other hub sources.
+(defvar +project-hub--source-special
+  `(:name "Special Buffers"
+    :narrow ?S
+    :category buffer
+    :face consult-buffer
+    :state ,#'consult--buffer-state
+    :items ,(lambda ()
+              (consult--buffer-query
+               :sort 'visibility
+               :as #'buffer-name
+               :predicate
+               (lambda (buf)
+                 (and (string-prefix-p "*" (buffer-name buf))
+                      (or (not (bound-and-true-p persp-mode))
+                          (not (persp--buffer-in-persps buf)))))))))
+
 (defvar +project-hub--source-buffers
   `(:name "Buffer"
     :narrow ?b
@@ -124,22 +152,22 @@
                                                              pinned-files))
                                            collect (cons (concat "★ " name) name)))
                      (pinned-closed (cl-loop for f in pinned-files
-                                            for short = (file-name-nondirectory f)
-                                            for display = (if (> (cl-count short pinned-files
-                                                                           :test (lambda (s path)
-                                                                                   (equal s (file-name-nondirectory path))))
-                                                                 1)
-                                                              (concat "★ " (abbreviate-file-name f))
-                                                            (concat "★ " short))
-                                            unless (member f ws-files)
-                                            collect (cons display f)))
+                                             for short = (file-name-nondirectory f)
+                                             for display = (if (> (cl-count short pinned-files
+                                                                            :test (lambda (s path)
+                                                                                    (equal s (file-name-nondirectory path))))
+                                                                  1)
+                                                               (concat "★ " (abbreviate-file-name f))
+                                                             (concat "★ " short))
+                                             unless (member f ws-files)
+                                             collect (cons display f)))
                      (unpinned-open (cl-loop for name in open-bufs
-                                            for buf = (get-buffer name)
-                                            unless (and buf (buffer-file-name buf)
-                                                        (member (+project-hub--canon-file
-                                                                 (buffer-file-name buf))
-                                                                pinned-files))
-                                            collect name)))
+                                             for buf = (get-buffer name)
+                                             unless (and buf (buffer-file-name buf)
+                                                         (member (+project-hub--canon-file
+                                                                  (buffer-file-name buf))
+                                                                 pinned-files))
+                                             collect name)))
                 (append pinned-open pinned-closed unpinned-open)))
     :action ,(lambda (cand &rest _)
                (unless (get-buffer cand)
@@ -166,9 +194,9 @@
     :face font-lock-keyword-face
     :items ,(lambda ()
               (when (bound-and-true-p persp-mode)
-                (let* ((open (+workspace-list-names))
+                (let* ((open-dirs (+project-hub--workspace-project-dirs))
                        (pinned-dirs (+project-hub--pins-get 'projects))
-                       (all-dirs (project-known-project-roots))
+                       (all-dirs (projectile-relevant-known-projects))
                        (seen-names (make-hash-table :test #'equal)))
                   ;; Count name occurrences for disambiguation
                   (dolist (dir all-dirs)
@@ -187,12 +215,11 @@
                             for display = (if (> (gethash name seen-names 0) 1)
                                               (abbreviate-file-name dir)
                                             name)
-                            unless (or (member name open)
+                            unless (or (member (+project-hub--canon-dir dir) open-dirs)
                                        (cl-find dir pinned-dirs :test #'equal))
                             collect (cons display dir))))))
     :action ,(lambda (dir &rest _)
-               (+project-hub-switch-to-project dir nil)
-               (project-switch-project dir))))
+               (projectile-switch-project-by-name dir))))
 
 (defun +project-hub--session-sources ()
   "Return agent-shell session consult sources with pin support."
@@ -229,7 +256,8 @@
    (append (list '+project-hub--source-buffers
                  '+project-hub--source-workspaces
                  '+project-hub--source-projects)
-           (+project-hub--session-sources))
+           (+project-hub--session-sources)
+           (list '+project-hub--source-special))
    :prompt "Hub: "
    :history '+project-hub--history
    :require-match nil
@@ -237,12 +265,12 @@
 
 ;;;###autoload
 (defun +project-hub-switch-to-project (project-dir buffer)
-  "Switch to workspace for PROJECT-DIR, adding BUFFER."
+  "Switch to the Doom workspace for PROJECT-DIR, adding BUFFER."
   (when (and project-dir (file-directory-p project-dir)
              (bound-and-true-p persp-mode))
-    (let ((ws-name (file-name-nondirectory (directory-file-name project-dir))))
-      (+workspace-switch ws-name t)
-      (when buffer (persp-add-buffer buffer)))))
+    (let ((current-prefix-arg t))
+      (+workspaces-switch-to-project-h project-dir))
+    (when buffer (persp-add-buffer buffer))))
 
 ;;;###autoload
 (defun +project-hub/toggle-pin-buffer (cand)

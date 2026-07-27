@@ -1,0 +1,81 @@
+;;; project-hub-test.el --- Tests for Project Hub -*- lexical-binding: t; -*-
+
+(require 'ert)
+(require 'cl-lib)
+
+(makunbound '+project-hub--source-projects)
+(load (expand-file-name "../autoload/project-hub.el"
+                        (file-name-directory (or load-file-name buffer-file-name)))
+      nil t)
+
+(ert-deftest project-hub-test-current-project-uses-doom-root ()
+  (cl-letf (((symbol-function 'doom-project-root)
+             (lambda (&optional _dir) "/doom/project/"))
+            ((symbol-function 'project-current)
+             (lambda (&rest _) '(test-project . "/project.el/project/")))
+            ((symbol-function 'project-root) #'cdr))
+    (should (equal (+project-hub--project-dir) "/doom/project/"))))
+
+(ert-deftest project-hub-test-project-source-uses-projectile-candidates ()
+  (let ((persp-mode t))
+    (cl-letf (((symbol-function '+workspace-list-names) (lambda () nil))
+              ((symbol-function '+project-hub--pins-get) (lambda (&rest _) nil))
+              ((symbol-function 'projectile-relevant-known-projects)
+               (lambda () '("/projects/alpha/" "/projects/beta/")))
+              ((symbol-function 'project-known-project-roots)
+               (lambda () '("/wrong/project-el/"))))
+      (should (equal (mapcar #'cdr
+                             (funcall (plist-get +project-hub--source-projects :items)))
+                     '("/projects/alpha/" "/projects/beta/"))))))
+
+(ert-deftest project-hub-test-project-source-filters-workspaces-by-root ()
+  (let ((persp-mode t))
+    (cl-letf (((symbol-function '+workspace-list-names) (lambda () '("renamed-workspace")))
+              ((symbol-function '+workspace-get) (lambda (&rest _) 'workspace))
+              ((symbol-function 'persp-parameter)
+               (lambda (parameter &optional _workspace)
+                 (and (eq parameter '+workspace-project) "/projects/alpha/")))
+              ((symbol-function '+project-hub--pins-get) (lambda (&rest _) nil))
+              ((symbol-function 'projectile-relevant-known-projects)
+               (lambda () '("/projects/alpha/" "/projects/beta/")))
+              ((symbol-function 'project-known-project-roots)
+               (lambda () '("/projects/alpha/" "/projects/beta/"))))
+      (should (equal (mapcar #'cdr
+                             (funcall (plist-get +project-hub--source-projects :items)))
+                     '("/projects/beta/"))))))
+
+(ert-deftest project-hub-test-project-action-uses-projectile-switch-once ()
+  (let ((projectile-calls nil)
+        (project-calls nil)
+        (manual-workspace-calls nil))
+    (cl-letf (((symbol-function 'projectile-switch-project-by-name)
+               (lambda (dir &optional _arg) (push dir projectile-calls)))
+              ((symbol-function 'project-switch-project)
+               (lambda (dir) (push dir project-calls)))
+              ((symbol-function '+project-hub-switch-to-project)
+               (lambda (dir _buffer) (push dir manual-workspace-calls))))
+      (funcall (plist-get +project-hub--source-projects :action) "/projects/alpha/")
+      (should (equal projectile-calls '("/projects/alpha/")))
+      (should-not project-calls)
+      (should-not manual-workspace-calls))))
+
+(ert-deftest project-hub-test-session-switch-uses-doom-workspace-without-prompt ()
+  (let ((persp-mode t)
+        doom-call
+        added-buffer
+        manual-workspace-call)
+    (cl-letf (((symbol-function 'file-directory-p) (lambda (_dir) t))
+              ((symbol-function '+workspaces-switch-to-project-h)
+               (lambda (dir) (setq doom-call (cons dir current-prefix-arg))))
+              ((symbol-function '+workspace-switch)
+               (lambda (&rest args) (setq manual-workspace-call args)))
+              ((symbol-function 'persp-add-buffer)
+               (lambda (buffer) (setq added-buffer buffer))))
+      (+project-hub-switch-to-project "/projects/alpha/" 'agent-buffer)
+      (should (equal (car doom-call) "/projects/alpha/"))
+      (should (cdr doom-call))
+      (should (eq added-buffer 'agent-buffer))
+      (should-not manual-workspace-call))))
+
+(provide 'project-hub-test)
+;;; project-hub-test.el ends here
