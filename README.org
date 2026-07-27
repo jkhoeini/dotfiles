@@ -542,3 +542,120 @@ vscode "ziyasal.vscode-open-in-github"
     # Keyboard customiser
     # "karabiner-elements"
 #+end_quote
+
+* TODO Emacs Project Tracking
+
+Design for a project-tracking layer that bridges Doom workspaces and
+Projectile repos with a richer notion of "project" (metadata, hierarchy,
+lifecycle, tags, multi-repo support).
+
+** Problem
+
+Doom workspaces and Projectile repos don't match a mental model where a
+"project" is a bigger objective with a lifecycle, metadata, and possibly
+multiple associated repos or subprojects. =SPC p p= assumes one repo =
+one workspace. There's no place for tags, categories, parents, or
+projects without a repo.
+
+** Mental model
+
+- A /project/ is a bigger objective with a lifecycle.
+- A project is usually associated with one working directory (repo)
+  but not always, and that dir can change over the project's life.
+- The same dir can be opened under multiple projects.
+- Projects can have subprojects (tree structure via =parent_id=).
+- Projects have metadata: tags, description, category, archived status.
+- A project has exactly one Doom workspace; switching to a project
+  resumes that workspace.
+- Opening a file does /not/ change project membership. Files open
+  normally in the current workspace per existing Doom behavior.
+
+** Data model
+
+SQLite table =projects=:
+
+#+begin_example
+  id              integer primary key
+  name            text unique not null
+  description     text
+  tags            text          -- comma-separated or json array
+  parent_id       integer       -- ref to projects.id, nullable
+  current_dir     text          -- nullable, mutable
+  workspace_name  text          -- stable link to Doom workspace
+  is_archived     integer       -- 0/1
+  created_at      text
+  last_opened_at  text
+#+end_example
+
+- =workspace_name= is the bridge to Doom. Project names are unique, so
+  workspace names stop colliding. If a project is renamed, update both
+  the row and the workspace name together.
+- No session-file column. =persp-mode= already persists workspaces to
+  =~/.config/emacs/.local/etc/workspaces/=. SQLite owns project
+  metadata; =persp-mode= owns workspace persistence. One source of
+  truth each.
+
+** Command surface
+
+#+begin_example
+  SPC , p     project switcher (SQLite projects, by name/tag/dir)
+              select existing project → resume its workspace
+              embark-act on candidate → edit tags, move dir,
+              set parent, archive, create subproject
+  SPC , r     repo browser (Projectile repos → projects or create)
+              select repo with existing projects → list them
+              select repo with no projects → quick create
+  M-x ...     guided create (full metadata at creation time)
+  SPC p p     stays as raw repo/workspace switch (untouched)
+#+end_example
+
+** Flows
+
+- *Switch existing project* (=SPC , p=): list projects from SQLite.
+  Select → switch to (or create) its workspace, set =current_dir= as
+  Projectile current project, update =last_opened_at=. Embark actions
+  available on candidates for lifecycle operations.
+
+- *Quick create from repo* (=SPC , r=): pick a Projectile repo. If it
+  has projects, list them. If none, offer quick create: name the
+  project, set =current_dir= to that repo, create workspace, switch to
+  it. Metadata added later.
+
+- *Guided create* (=M-x=): prompt for name, description, tags, and
+  optional parent project at creation time.
+
+- *Subprojects*: created via embark action on a parent project
+  candidate. Gets its own workspace, sets =parent_id=.
+
+- *Move current dir*: embark action. Updates =current_dir= on the
+  project row. Does not rename the workspace.
+
+** Workspace lifecycle
+
+- Workspace created immediately at project creation time.
+- Workspace name = project name (unique).
+- =+workspace-project= parameter set to =current_dir= at creation and
+  updated when =current_dir= moves.
+- Switching to a project resumes its saved workspace (buffers and
+  window state from =persp-mode= autosave).
+- =persp-mode= autosave on exit remains enabled; automatic restore
+  stays disabled (current Doom default).
+
+** Out of scope
+
+- Changing how files open or which workspace they land in.
+- Replacing Doom's =SPC TAB= workspace commands.
+- Replacing =SPC p p= for raw repo switching.
+- Automatic project assignment for buffers based on directory.
+- Synchronizing =project.el= and Projectile remembered-project lists.
+
+** Open questions
+
+- Should =SPC , p= support filtering by tag/dir/category inline, or
+  rely on Vertico =consult= narrowing?
+- How to handle project rename: rename the workspace too, or keep
+  workspace name stable and add a =workspace_name= alias?
+- Should archived projects be hidden from =SPC , p= by default, with
+  a toggle to show them?
+- Migration path: how to import existing Doom workspaces into SQLite
+  projects on first use?
