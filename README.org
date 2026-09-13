@@ -22,6 +22,10 @@ All other Omarchy shortcuts, including =Super+Alt+Enter= for tmux, stay inherite
 =guix/files/hypr/input.lua= holds keyboard and touchpad preferences, including
 US/Persian layouts, Caps Lock as Escape, and four-finger workspace swipes.
 
+Guix Home also owns =~/.bashrc=. Change its Omarchy loader in =my-bash-setup=
+in =guix/home-configuration.scm=, then run =guix home reconfigure guix/home-configuration.scm=.
+Do not edit the generated =~/.bashrc= directly.
+
 * Roadmap: Unified Dotfiles Architecture
 
 The goal is to end up with a clean, layered setup that works across macOS

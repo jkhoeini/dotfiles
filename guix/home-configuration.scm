@@ -59,7 +59,19 @@
     (simple-service 'my-bash-setup
                     home-bash-service-type
                     (home-bash-extension
-                     (bashrc (list (plain-file "omarchy-bashrc" "source ~/.local/share/omarchy/default/bash/rc")))))
+                     (bashrc
+                      (list
+                       (plain-file "omarchy-bashrc"
+                                   "# /etc/omarchy.conf is written by omarchy-dev-link. When absent, force the
+# package default instead of preserving a stale inherited dev-link value before
+# we decide which rc file to source.
+if [[ -f /etc/omarchy.conf ]]; then
+  source /etc/omarchy.conf
+  export OMARCHY_PATH=\"${OMARCHY_PATH:-/usr/share/omarchy}\"
+else
+  export OMARCHY_PATH=/usr/share/omarchy
+fi
+source \"$OMARCHY_PATH/default/bash/rc\"")))))
     (simple-service 'my-zsh-setup
                     home-zsh-service-type
                     (home-zsh-extension
