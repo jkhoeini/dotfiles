@@ -71,11 +71,13 @@
     (service home-batsignal-service-type
              (home-batsignal-configuration))
     (service home-xdg-configuration-files-service-type
-             (my-config-symlink* "antidote/plugins.txt"
-                                 "zsh/rc.zsh"
-                                 "doom/config.el"
-                                 "doom/init.el"
-                                 "doom/packages.el"
-                                 "doom/themes/doom-twilight-theme.el")))
+             (append `(("hypr/bindings.lua" ,(ln-s "files/hypr/bindings.lua"))
+                       ("hypr/input.lua" ,(ln-s "files/hypr/input.lua")))
+                     (my-config-symlink* "antidote/plugins.txt"
+                                         "zsh/rc.zsh"
+                                         "doom/config.el"
+                                         "doom/init.el"
+                                         "doom/packages.el"
+                                         "doom/themes/doom-twilight-theme.el"))))
    
    %base-home-services)))

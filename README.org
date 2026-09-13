@@ -10,6 +10,18 @@ Run this in the terminal. It will setup homebrew and emacs and install dependenc
 ./setup.sh
 #+end_src
 
+* Linux-only overrides
+
+=guix/files/= holds Linux-only configuration, outside the =home_links/= tree
+that =setup.sh= Stows on macOS. Guix Home links these files through
+=guix/home-configuration.scm=.
+
+=guix/files/hypr/bindings.lua= overrides only =Super+Enter= to launch Emacs.
+All other Omarchy shortcuts, including =Super+Alt+Enter= for tmux, stay inherited.
+
+=guix/files/hypr/input.lua= holds keyboard and touchpad preferences, including
+US/Persian layouts, Caps Lock as Escape, and four-finger workspace swipes.
+
 * Roadmap: Unified Dotfiles Architecture
 
 The goal is to end up with a clean, layered setup that works across macOS
